@@ -1,0 +1,1227 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Rocky RESTful API Version 3.0 (Unofficial)</title>
+
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight, .highlight .w {
+  color: #f8f8f2;
+  background-color: #272822;
+}
+.highlight .err {
+  color: #151515;
+  background-color: #ac4142;
+}
+.highlight .c, .highlight .cd, .highlight .cm, .highlight .c1, .highlight .cs {
+  color: #505050;
+}
+.highlight .cp {
+  color: #f4bf75;
+}
+.highlight .nt {
+  color: #f4bf75;
+}
+.highlight .o, .highlight .ow {
+  color: #d0d0d0;
+}
+.highlight .p, .highlight .pi {
+  color: #d0d0d0;
+}
+.highlight .gi {
+  color: #90a959;
+}
+.highlight .gd {
+  color: #ac4142;
+}
+.highlight .gh {
+  color: #6a9fb5;
+  background-color: #151515;
+  font-weight: bold;
+}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv {
+  color: #aa759f;
+}
+.highlight .kc {
+  color: #d28445;
+}
+.highlight .kt {
+  color: #d28445;
+}
+.highlight .kd {
+  color: #d28445;
+}
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .sx, .highlight .s1 {
+  color: #90a959;
+}
+.highlight .sr {
+  color: #75b5aa;
+}
+.highlight .si {
+  color: #8f5536;
+}
+.highlight .se {
+  color: #8f5536;
+}
+.highlight .nn {
+  color: #f4bf75;
+}
+.highlight .nc {
+  color: #f4bf75;
+}
+.highlight .no {
+  color: #f4bf75;
+}
+.highlight .na {
+  color: #6a9fb5;
+}
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mb, .highlight .mx {
+  color: #90a959;
+}
+.highlight .ss {
+  color: #90a959;
+}
+    </style>
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
+      <script src="javascripts/all.js"></script>
+  </head>
+
+  <body class="index" data-languages="[&quot;JSON&quot;]">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="images/navbar.png" />
+      </span>
+    </a>
+    <div class="tocify-wrapper">
+      <img src="images/logo.png" />
+        <div class="lang-selector">
+              <a href="#" data-language-name="JSON">JSON</a>
+        </div>
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <div id="toc">
+      </div>
+        <ul class="toc-footer">
+            <li><a href='#'>Sign Up for a Developer Key</a></li>
+            <li><a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
+        </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id="overview">Overview</h1>
+
+<p>Rocky is web application that provides a web user interface that U.S. citizens can use for assistance in preparing a voter registration application document that is complete and correct for all Federal and state­ specific requirements, and therefore should be accepted in most cases by the election officials to whom the user submits the completed, printed, signed form.</p>
+
+<p>This specification defines an application programming interface that provides exactly the same functions as the Rocky web UI, but intended for a complementary purpose: use by other web applications that have or collect personal info via their own web UI, and which rely on the Rocky back­end for data validation, error reporting (particularly for state­ specific conditions), PDF generation, and data storage. Via this API, Rocky provides a web service to service clients (web applications that use this API to interact with Rocky) that are software operated by Rocky &ldquo;partner organizations&rdquo;.</p>
+
+<p>Partner organizations also have access to aggregated data and reporting. These are provided by the Rocky Web UI in two ways partner organization staff can use to obtain statistics and summary information: a CSV file download provides aggregated registration data for all the registrations done via that partner; and a summary web page provides statistics about this partner­specific aggregated data set. This API provides analogous bulk data extraction, with the &ldquo;partner_registrations&rdquo; interface that returns the same data as is provided in the web UI CSV file download.</p>
+
+<p>The primary interface is this API is the &ldquo;registrations&rdquo; interface, in which callers provide all the personal data needed to create a person’s voter registration application form. Rocky checks the validity of each field, including state­ specific validation rules. If there are errors, Rocky returns to the caller a set of error reporting on individual fields of personal data. If there are no errors, Rocky returns the URL of a PDF file that contains the validated information, properly formatted as a voter registration request form.</p>
+
+<p>This API also includes an optional interface &ldquo;state_requirements,&rdquo; used to pre­check the user data based on location and date of birth. One intended use of the pre­check function is for cases where service clients that already know the user’s location, and perhaps also DOB. In such cases, the service client can find out from Rocky whether a user is ineligible, and if so, not even begin the web UI dialogues with the user to obtain personal information. Location ineligibility is the result of states that do not allow voter registration by mail, or do not accept Rocky­generated forms for some other reason. DOB is used to determine age ineligibility in the user’s state.</p>
+
+<p>When the user is not ineligible based on location or DOB, &ldquo;state_requirements&rdquo; returns several kinds of state­ specific information that the caller could use as part its web UI with the user ­­ for example, the list of political parties that user can select for affiliation, or an indication that certain fields are optional for the state, or not collected by the state.</p>
+
+<p>Finally, the API includes the &ldquo;partner_registrations&rdquo; interface to obtain records of past registration transactions. Like the similar UI in the Rocky Partner Portal, access requires authentication, and the records returned are only those pertinent to the authenticated entity.</p>
+
+<h1 id="release-notes">Release Notes</h1>
+
+<h2 id="v3">V3</h2>
+
+<p>Added these interfaces:</p>
+
+<ul>
+<li><code class="prettyprint">GET /api/v3/registrations/pdf_ready</code></li>
+<li><code class="prettyprint">POST /api/v3/registrations/stop_reminders</code></li>
+<li><code class="prettyprint">POST /api/v3/registrations/bulk</code></li>
+</ul>
+
+<p>In addition: </p>
+
+<ul>
+<li>Added parameter for registration and gregistration to indicate async PDF generation or response blocking PDF generation.</li>
+<li>Added parameter for custom stop_reminders url. Added UID to the response.</li>
+<li>Modified format from <code class="prettyprint">/api/v3/partners/partner.json</code> to <code class="prettyprint">/api/v3/partners/[partner_id].json</code></li>
+<li>Added <code class="prettyprint">application/registration/partner</code> CSS urls, <code class="prettyprint">finish_iframe_url</code>, <code class="prettyprint">external_tracking_snippet</code>, <code class="prettyprint">registration_instructions_url</code> to <code class="prettyprint">/api/v3/partners/[partner_id].json</code> response.</li>
+<li>Added new fields to match column names for ActiveResource expectations and general standardization.</li>
+</ul>
+
+<p>Modified request for:</p>
+
+<ul>
+<li><code class="prettyprint">GET /api/v3/partners/[partner_id].json</code></li>
+</ul>
+
+<p>to allow for all survey question languages.</p>
+
+<h2 id="v2-2">V2.2</h2>
+
+<p>Added these interfaces:</p>
+
+<ul>
+<li><code class="prettyprint">GET /api/v2/partnerpublicprofiles/partner.json</code></li>
+<li><code class="prettyprint">GET /api/v2/gregistrationstates.json</code></li>
+<li><code class="prettyprint">POST /api/v2/gregistration.json</code></li>
+<li><code class="prettyprint">GET /api/v2/gregistrations.json</code></li>
+</ul>
+
+<p>Since this addition did not modify the existing API, did not rev from v2 to v3.</p>
+
+<h1 id="interface-definitions">Interface Definitions</h1>
+
+<p>All requests and responses are JSON format. All fields are required unless otherwise specified as optional. All string fields have no length or format restrictions, unless specifically stated. Some field values have specific formats; others have parenthesized notations on field values.</p>
+
+<h2 id="registrations">registrations</h2>
+
+<p><code class="prettyprint">POST /api/v3/registrations.json</code></p>
+
+<p>Creates a new registrant record using the input parameter data; and also triggers the side effects of a new record, e.g. sending confirmation email.</p>
+
+<h3 id="fields">Fields</h3>
+
+<p>Most fields are personal information. A few fields merit additional description:</p>
+
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>partner_id</td>
+<td>Uniquely identifies a partner organization that uses Rocky as a service for the organization’s members or community. Each transaction is logged by partner_id and every registrant record is tagged by partner_id.</td>
+</tr>
+<tr>
+<td>source_tracking_id</td>
+<td>Used to identify the source of a request. For example, in the Web UI, it is typically used as query parameter embedded in a URL in email messages, and identifies the request as part of a particular email campaign. The string value is un­interpreted, however, and may be used for any similar purpose</td>
+</tr>
+<tr>
+<td>partner_tracking_id</td>
+<td>Similar to <code class="prettyprint">source_tracking_id</code>, but intended for use for partner­ specific purposes, such as implementing a leader­board, that may require an a tag in addition to the source_tracking_id.</td>
+</tr>
+<tr>
+<td>id_number</td>
+<td>Typically a state driver’s license number state ID card number, or social security number; length and format vary by state, as does the explanation of what forms of ID are acceptable. However, id_number is not optional. (Note: it is true that some states’ localities will accept NVRA forms without an ID number, for the special case of people with neither state ID or an SSN. However, since we cannot record precisely how each state handles this special case, we require some ID number, to avoid creating registration requests that may be rejected.)</td>
+</tr>
+<tr>
+<td>email_address</td>
+<td>Required by default, even though it is optional for the paper form; however, we need it to contact the user to send them a link to the PDF we generate for them.</td>
+</tr>
+<tr>
+<td>opt_in_email</td>
+<td>Determined by the caller, and simply recorded in the registration record created by the call; the caller can determine whether to always obtain the info from the user, or have a default in the case of no user input. Regardless, the opt_in_email field is required to record true or false for opt­ion, regardless of how the caller determined the user’s preference. This field is used to record a user preference for email from RockTheVote.</td>
+</tr>
+<tr>
+<td>opt_in_sms</td>
+<td>Required in exactly the same way as <code class="prettyprint">opt_in_email</code></td>
+</tr>
+<tr>
+<td>opt_in_volunteer</td>
+<td>Required in exactly the same way as <code class="prettyprint">opt_in_email</code></td>
+</tr>
+<tr>
+<td>partner_opt_in_email, partner_opt_in_sms, partner_opt_in_volunteer</td>
+<td>Used in an analogous way to record user preference for communication with the partner organization.</td>
+</tr>
+<tr>
+<td>party</td>
+<td>Optional because it is not required on the form; however, the allowable values are state specific.</td>
+</tr>
+<tr>
+<td>callback</td>
+<td>Optional parameter that, if present and not empty, changes the return value from JSON format to jsonp; that is, the JSON return value would be a string J, and if the callback parameter’s value is F, then the return value will be F(J);</td>
+</tr>
+<tr>
+<td>custom_stop_reminders_url</td>
+<td>Optional URL string that will be used in a link in reminder emails to registrants to cancel any further reminder emails. If the provided URL includes <code class="prettyprint">&lt;UID&gt;</code>, that string will be replaced by the registrant’s UID. If left blank, the default core system stop_reminders URL will be used.</td>
+</tr>
+<tr>
+<td>async</td>
+<td>Specifies whether or not the request should return a response immediately (async=false) or wait for a PDF to be generated (async=true)</td>
+</tr>
+</tbody></table>
+
+<p>Other Notes</p>
+
+<ul>
+<li>Some fields are required in some states, optional in others, and not recorded in others; similarly some fields have permitted values that vary by state. State­ specific information is provided by other interfaces in this API.</li>
+<li><code class="prettyprint">pdfurl</code> is an out parameter that is the URL of a PDF file containing the voter registration application form with the personal information provided in the request.
+
+<ul>
+<li>The URL itself is a large number, large enough to make it very difficult for adversaries to guess URLs, for example https://register.rockthevote.org/pdf/456136972787234.pdf</li>
+<li>One intended use is that the caller embed the URL in a link in dynamically generated HTML that is presented to the user.</li>
+<li>The URL is returned regardless of whether the PDF is ready for download.</li>
+</ul></li>
+</ul>
+
+<blockquote>
+<p>Example POST request payload (minimum required fields)</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"registration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"lang"</span><span class="p">:</span><span class="w"> </span><span class="s2">"en"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"partner_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456789"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"send_confirmation_reminder_emails"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01102016 11:22:33"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01102016 12:23:56"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"date_of_birth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01011990"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"id_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"email_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"me@me.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"first_registration"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"home_zip_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01234"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"us_citizen"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"has_state_license"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"is_eighteen_or_older"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mrs."</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"home_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123 Main St"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"home_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Big Town"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"home_state_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CA"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"has_mailing_address"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"race"</span><span class="p">:</span><span class="w"> </span><span class="s2">"White (not Hispanic)"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"change_of_name"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"change_of_address"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"opt_in_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"opt_in_sms"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"opt_in_volunteer"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"partner_opt_in_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"partner_opt_in_sms"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"partner_opt_in_volunteer"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>lang</td>
+<td>locale­-compatible string</td>
+<td>Required. Options: (en/es, etc)</td>
+</tr>
+<tr>
+<td>partner_id</td>
+<td>string</td>
+<td>Required. Series of digits, no specific length</td>
+</tr>
+<tr>
+<td><small>send_confirmation_reminder_emails</small></td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>collect_email_address</td>
+<td>string</td>
+<td>Optional. ‘no’ for false</td>
+</tr>
+<tr>
+<td>source_tracking_id</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>partner_tracking_id</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>short_form</td>
+<td>boolean</td>
+<td>Optional. Default false</td>
+</tr>
+<tr>
+<td>state_ovr_data</td>
+<td>string</td>
+<td>Optional. Hash, only used for stats and in cases where registrant went through finish­ with­ state steps but ended up finishing with rock the vote)</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>Required. ‘mm­dd­yyyy hh:mm:ss’ (for statistics)</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>Required.  ‘mm­dd­yyyy hh:mm:ss’ (for statistics)</td>
+</tr>
+<tr>
+<td>date_of_birth</td>
+<td>date</td>
+<td>Required. ‘mm­dd­yyyy’</td>
+</tr>
+<tr>
+<td>id_number</td>
+<td>string</td>
+<td>Required. Series of alnum, length and format state specific</td>
+</tr>
+<tr>
+<td>email_address</td>
+<td>string</td>
+<td>Required. RFC syntax</td>
+</tr>
+<tr>
+<td>first_registration</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>home_zip_code</td>
+<td>string</td>
+<td>Required. ‘zzzzz’ ( 5 digit)</td>
+</tr>
+<tr>
+<td>us_citizen</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>has_state_license</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>is_eighteen_or_older</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>name_title</td>
+<td>string</td>
+<td>Required. Must be one of &ldquo;Mr.&rdquo;, &ldquo;Mrs.&rdquo;, &ldquo;Miss&rdquo;, &ldquo;Ms.&rdquo;, &ldquo;Sr.&rdquo;, &ldquo;Sra.&rdquo;, &ldquo;Srta.&rdquo;</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>middle_name</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>last_name</td>
+<td>string</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>name_suffix</td>
+<td>string</td>
+<td>Optional. Must be one of &ldquo;Jr.&rdquo;, &ldquo;Sr.&rdquo;, &ldquo;II&rdquo;, &ldquo;III&rdquo;, &ldquo;IV&rdquo;</td>
+</tr>
+<tr>
+<td>home_address</td>
+<td>string</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>home_unit</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>home_city</td>
+<td>string</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>home_state_id</td>
+<td>string(2)</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>has_mailing_address</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>mailing_address</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">has_mailing_address</code></td>
+</tr>
+<tr>
+<td>mailing_unit</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>mailing_city</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">has_mailing_address</code></td>
+</tr>
+<tr>
+<td>mailing_state_id</td>
+<td>string(2)</td>
+<td>Req if <code class="prettyprint">has_mailing_address</code></td>
+</tr>
+<tr>
+<td>mailing_zip_code</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">has_mailing_address</code></td>
+</tr>
+<tr>
+<td>race</td>
+<td>string</td>
+<td>Required/optional is state­ specific</td>
+</tr>
+<tr>
+<td>party</td>
+<td>string</td>
+<td>Optional. No validation because allowable choices are state specific</td>
+</tr>
+<tr>
+<td>phone</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>phone_type</td>
+<td>string</td>
+<td>Optional. Must be one of &ldquo;Mobile&rdquo;, &ldquo;Home&rdquo;, &ldquo;Work&rdquo;, &ldquo;Other&rdquo;, &ldquo;Movil&rdquo;, &ldquo;Casa&rdquo;, &ldquo;Trabajo&rdquo;, &ldquo;Otro&rdquo;</td>
+</tr>
+<tr>
+<td>change_of_name</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>prev_name_title</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>prev_first_name</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>prev_middle_name</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>prev_last_name</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">change_of_name</code></td>
+</tr>
+<tr>
+<td>prev_name_suffix</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>change_of_address</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>prev_address</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">change_of_address</code></td>
+</tr>
+<tr>
+<td>prev_unit</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>prev_city</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">change_of_address</code></td>
+</tr>
+<tr>
+<td>prev_state_id</td>
+<td>string(2)</td>
+<td>Req if <code class="prettyprint">change_of_address</code></td>
+</tr>
+<tr>
+<td>prev_zip_code</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">change_of_address</code></td>
+</tr>
+<tr>
+<td>opt_in_email</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>opt_in_sms</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>opt_in_volunteer</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>partner_opt_in_email</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>partner_opt_in_sms</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>partner_opt_in_volunteer</td>
+<td>boolean</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>survey_question_1</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">survey_answer_1</code> is not blank</td>
+</tr>
+<tr>
+<td>survey_answer_1</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>survey_question_2</td>
+<td>string</td>
+<td>Req if <code class="prettyprint">survey_answer_2</code> is not blank</td>
+</tr>
+<tr>
+<td>survey_answer_2</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>callback</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>custom_stop_reminders_url</td>
+<td>string</td>
+<td>Optional. URL format</td>
+</tr>
+<tr>
+<td>async</td>
+<td>boolean</td>
+<td>Optional. Default is &ldquo;true&rdquo;</td>
+</tr>
+</tbody></table>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p>Post JSON dictionary of fields nested under <code class="prettyprint">registration</code></p>
+
+<h3 id="success-response">Success Response</h3>
+
+<blockquote>
+<p>Success response</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"pdfurl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"URL (for the generated PDF)"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"uid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UID string"</span><span class="w">
+</span><span class="p">}</span><span class="w"> 
+</span></code></pre>
+
+<p>Status Code 200, returns <code class="prettyprint">pdfurl</code> and <code class="prettyprint">uid</code></p>
+
+<h3 id="errors">Errors</h3>
+
+<p>All return status code 400</p>
+
+<p><strong>Validation Error</strong></p>
+
+<blockquote>
+<p>Validation Error</p>
+</blockquote>
+
+<p>Returns <code class="prettyprint">field_name</code> where error occurred, and a <code class="prettyprint">message</code> about the error in the specified language.</p>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"field_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string (field where error occurred)"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string (determined by Rocky, for display by caller, in specified lang)"</span><span class="w">
+</span><span class="p">}</span><span class="w">  
+</span></code></pre>
+
+<p><strong>Syntax Error</strong></p>
+
+<blockquote>
+<p>Syntax Error</p>
+</blockquote>
+
+<p>Returns <code class="prettyprint">field_name</code> of missing required field, and the <code class="prettyprint">message</code> &ldquo;Invalie parameter type&rdquo;.</p>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"field_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string (name of field that is not defined for this request)"</span><span class="p">,</span><span class="w">  
+  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid parameter type"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p><strong>Unsupported language</strong></p>
+
+<p>Returns a <code class="prettyprint">message</code></p>
+
+<blockquote>
+<p>Unsupported language</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p><strong>Survey Question Error</strong></p>
+
+<p>Returns a <code class="prettyprint">message</code> in the format &ldquo;Question N required when Answer N provided&rdquo;</p>
+
+<blockquote>
+<p>Survey Question Error</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string ('Question N required when Answer N provided')"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h2 id="bulk_registrations">bulk_registrations</h2>
+
+<p>Creates 1­n incomplete registrant records. Used for creating data in the core rocky system for statistics, but does not cause emails to be sent or PDFs to be created. Validations are not performed</p>
+
+<p>POST /api/v3/registrations/bulk</p>
+
+<p>POST { registrations: [ {</p>
+
+<p>status: string (indicates a step number that the user stopped at) ineligible_non_participating_state: boolean (whether the registrant is ineligible due to the state not participating),</p>
+
+<p>ineligible_age: boolean (whether the registrant is ineligible due to being too young),</p>
+
+<p>ineligible_non_citizen: boolean (whether the registrant is ineligible due to not being a US citizen), under 18), 18),</p>
+
+<p>under_18_ok: boolean (whether the registrant decided to proceed despite being remind_when_18: boolean (whether the registrant requested a reminder when</p>
+
+<p>age: integer (age of registrant),
+javascript_disabled: boolean (whether the user had javascript disabled), using_state_online_registration: boolean (whether the user selected to use the state online reg system),
+finish_with_state: boolean (whether the user is in a &ldquo;finish_with_state&rdquo; flow) See registrations interface definition for remaining fields of &ldquo;registration&rdquo; input record</p>
+
+<p>}] }</p>
+
+<p>Success: return 200</p>
+
+<p>{ abandoned_registrations: integer (number of records written)}</p>
+
+<p>Error: return 400</p>
+
+<p>[{ response_hash }]</p>
+
+<p>Return an array of responses for each record that is either</p>
+
+<p>{ } (empty hash)</p>
+
+<p>or</p>
+
+<p>{ type: string (ValidationError, SyntaxError, UnsupportedLanguageError),</p>
+
+<p>f i e l d _ n a m e : s t r i n g ( f  i e l d w h e r e e r r o r o c c u r r e d ) ,  </p>
+
+<p>message: string (determined by Rocky, for display by caller, in specified lang) }]</p>
+
+<h2 id="gregistrations">gregistrations</h2>
+
+<p>Creates a new registrant record using the input parameter data, for the use case where the user was eligible to finish their registration on a government operated state­ specific web site, chose to be re­directed there, and did not return ­­ presumably because they finished registration on the state’s site.</p>
+
+<p>Differs from registrations only in the following ways:</p>
+
+<ul>
+<li>Only the following parameters are required: lang, partner_id, send_confirmation_reminder_emails, d ate_of_birth, email_address, home_zip_code, us_citizen, name_title, last_name</li>
+<li>If send_confirmation_reminder_emails is true, then the emails sent are the the emails that are pertinent to this use case, rather than the standard use case of completing a registration using the Rocky UI</li>
+<li>The PDF is not generated, and therefore the async parameter has no effect</li>
+<li>Success has no output parameters</li>
+<li>There is an additional error return code</li>
+</ul>
+
+<p>POST /api/v3/gregistrations.json</p>
+
+<p>POST { registration: {</p>
+
+<p>See registrations interface definition for fields of &ldquo;registration&rdquo; input record</p>
+
+<p>}}</p>
+
+<p>Success: return 200</p>
+
+<p>Unsupported state: return 400 { message: string }</p>
+
+<p>See registrations interface definition for other return data definitions.</p>
+
+<h2 id="bulk_gregistrations">bulk_gregistrations</h2>
+
+<p>Same as gregistrations but expects an array of registrant records and returns the number of records created.</p>
+
+<p>POST /api/v3/bulk_gregistrations.json</p>
+
+<p>POST { bulk_gregistrations: [{</p>
+
+<p>status: string (indicates a step number that the user stopped at)</p>
+
+<p>created_at: ( UTC datetime format),</p>
+
+<p>updated_at: ( UTC datetime format),</p>
+
+<p>See registrations interface definition for fields of &ldquo;registration&rdquo; input record</p>
+
+<p>}]}</p>
+
+<p>Success: return 200</p>
+
+<p>{ bulk_gregistrations: integer (number of records written)}</p>
+
+<p>Error: return 400</p>
+
+<p>[{ response_hash }]</p>
+
+<p>Return an array of responses for each record that is either</p>
+
+<p>{ } (empty hash)</p>
+
+<p>or</p>
+
+<p>{ type: string (ValidationError, SyntaxError, UnsupportedLanguageError),</p>
+
+<p>f i e l d _ n a m e : s t r i n g ( f  i e l d w h e r e e r r o r o c c u r r e d ) ,  </p>
+
+<p>message: string (d etermined by Rocky, for display by caller, in specified lang) }]</p>
+
+<h2 id="gregistrationstates">gregistrationstates</h2>
+
+<p>Returns a list of state for which Rocky current supports per­state integration with states. There are no input parameters. State return data is the 2 letter code for the state, and the URL to use to send registrant data to the state’s web site.</p>
+
+<p>GET /api/v3/gregistrationstates.json</p>
+
+<p>Success: return 200</p>
+
+<p>{ states: [name: string ( 2 letter state code), url: string ( URL format)] }</p>
+
+<p>state_requirements</p>
+
+<p>Most input fields are personal information; most output fields are indicated as state specific. A few fields merit additional description:</p>
+
+<ul>
+<li>For input, one of home_state_id and home_zip_code is required. If both are provided, they must match. Really only one is needed.</li>
+<li>fields named <code class="prettyprint">&lt;foo&gt;_msg</code> contain a string with state­ specific information that explains the state­ specific situation of <code class="prettyprint">&lt;foo&gt;</code>, such as what the requirements are for reporting race, or stating party affiliation, or why the state does not allow party affiliation, or what the state’s rules are about ID numbers for voter registration, or for minimum age for filing a voter registration application.</li>
+<li>fields named <code class="prettyprint">sos_&lt;foo&gt;</code> refer to the contract information for the office of Secretary of State for the state specified in the home_state_id input field</li>
+<li>invalid state error is for a home_state_id input field value that is not a state, e.g. AJ</li>
+<li>non participating state error is for a correct state id, but for a state that does not participate in mail­in NVRA­form registration; the explanatory msg is state­ specific</li>
+<li>to validate the age, make sure the person is 18+ yo and return localized error message if she’s not</li>
+<li>no_party_msg is the name of the last option for party affiliation; in some states it is &ldquo;none&rdquo; while in others it is &ldquo;decline to state&rdquo; and over time any state can change its preferences</li>
+<li>requires_party_msg explains the state’s rules for whether an application must or may include a party affiliation selection</li>
+<li>callback is an optional string parameter, exactly as described above</li>
+</ul>
+
+<p>GET /api/v3/state_requirements.json checks state eligibility and provides state­ specific fields information</p>
+
+<p>GET: { lang: locale­compatible string (en/es, etc), home_state_id: string(2),</p>
+
+<p>home_zip_code: ‘zzzzz’ ( 5 digit),</p>
+
+<p>date_of_birth: ‘mm­dd­yyyy’  | Optional |</p>
+
+<p>callback: string (optional) }</p>
+
+<p>Success: return 200</p>
+
+<p>{ requires_race: boolean,</p>
+
+<p>requires_race_msg: string, requires_party: boolean, requires_party_msg: string, no_party: boolean, no_party_msg: string, party_list: [ party_name: string], id_length_min: integer, id_length_max: integer, id_number_msg: string, sos_address: string, sos_phone: string,</p>
+
+<p>sos_url: string,</p>
+
+<p>sub_18_msg: string }</p>
+
+<h3 id="errors">Errors</h3>
+
+<table><thead>
+<tr>
+<th>Problem</th>
+<th>Status Code</th>
+<th>Message</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Invalid state ID</td>
+<td>400</td>
+<td><code class="prettyprint">{ message: string }</code></td>
+</tr>
+<tr>
+<td>Invalid ZIP code</td>
+<td>400</td>
+<td><code class="prettyprint">{ message: string }</code></td>
+</tr>
+<tr>
+<td>Incorrect ZIP code ( ZIP does not match state)</td>
+<td>400</td>
+<td><code class="prettyprint">{ message: string }</code></td>
+</tr>
+<tr>
+<td>Non­participating state</td>
+<td>400</td>
+<td><code class="prettyprint">{ message: string ( state specific) }</code></td>
+</tr>
+<tr>
+<td>Invalid age</td>
+<td>400</td>
+<td></td>
+</tr>
+<tr>
+<td>Unsupported language</td>
+<td>400</td>
+<td><code class="prettyprint">{ message: string }</code></td>
+</tr>
+<tr>
+<td>Syntax Error</td>
+<td>400</td>
+<td><code class="prettyprint">{ field_name: string (name of field that is not defined for this request),  message: string (&quot; Invalid parameter type&quot;) }</code></td>
+</tr>
+</tbody></table>
+
+<h2 id="pdf_ready">pdf_ready</h2>
+
+<p>For a given registration UID, returns true or false to indicate whether the PDF for that registrant exists.</p>
+
+<p>GET /api/v3/registrations/pdf_ready returns status of PDF generation for the given registrant</p>
+
+<p>GET: { U ID: string ( no specific length),</p>
+
+<p>callback: string ( optional) }</p>
+
+<p>Invalid Partner or API key: return 400 { message: string }</p>
+
+<p>Not Found UID: return 400</p>
+
+<p>{ field_name: &ldquo;UID&rdquo;, message: string ( &ldquo;Registrant not found&rdquo; }</p>
+
+<p>Syntax Error: return 400</p>
+
+<p>{ field_name: string (name of field that is not defined for this request),  message: string (&ldquo; Invalid parameter type&rdquo;) }</p>
+
+<p>Success: return 200</p>
+
+<p>{ pdf_ready: boolean, UID: uid}</p>
+
+<h2 id="stop_reminders">stop_reminders</h2>
+
+<p>POST /api/v3/registrations/stop_reminders F or a given registration UID sets reminders_left to</p>
+
+<p>0 to prevent further reminder emails.</p>
+
+<p>POST: { partner_id: string (s eries of digits, no specific length), partner_API_key: string , (no specific length),</p>
+
+<p>UID: string ( no specific length),</p>
+
+<p>callback: string ( optional)</p>
+
+<p>}</p>
+
+<p>Invalid Partner or API key: return 400 { message: string }</p>
+
+<p>Not Found UID: return 400</p>
+
+<p>{ field_name: &ldquo;UID&rdquo;, message: string ( &ldquo;Registrant not found&rdquo; }</p>
+
+<p>Syntax Error: return 400</p>
+
+<p>{ field_name: string (name of field that is not defined for this request),  message: string (&ldquo; Invalid parameter type&rdquo;) }</p>
+
+<p>Success: return 200 {</p>
+
+<p>UID: string (no specific length), first_name: string,</p>
+
+<p>last_name: string, email_address: string, reminders_stopped: boolean</p>
+
+<p>}</p>
+
+<p>registrations</p>
+
+<p>For a given partner, checks partner_id (ID in the &ldquo;partners&rdquo; table) and corresponding API key, and returns partner­specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional &ldquo;email&rdquo; parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional &ldquo;since&rdquo; parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the &ldquo;status&rdquo; out parameter. The callback parameter is an optional string parameter, exactly as described above.</p>
+
+<p>GET /api/v3/registrations.json returns registration records associated with the given partner</p>
+
+<p>GET: { partner_id: string (s eries of digits, no specific length), partner_API_key: string, (no specific length),</p>
+
+<p>since: string ( optional, UTC datetime format),</p>
+
+<p>email: string ( optional, email name at domain format), callback: string ( optional)</p>
+
+<p>}</p>
+
+<p>Invalid Partner or API key: return 400 { message: string }</p>
+
+<p>Invalid since: return 400</p>
+
+<p>{ field_name: &ldquo;since&rdquo;, message: string ( &ldquo;Invalid parameter value&rdquo; }</p>
+
+<p>Syntax Error: return 400</p>
+
+<p>{ field_name: string (name of field that is not defined for this request),  message: string (&ldquo; Invalid parameter type&rdquo;) }</p>
+
+<p>Success: return 200</p>
+
+<p>{ registrations:</p>
+
+<p>[ s t a t u s : s t r i n g (  c o m p l e t e , o r r e a s o n f o r i n c o m p l e t e ) ,   create_time: string ( UTC datetime format), complete_time: string ( UTC datetime format),</p>
+
+<p>lang: locale­compatible string ( en/es/fr, etc), first_reg: boolean,</p>
+
+<p>citizen: boolean, first_registration: boolean, home_zip_code: ‘zzzzz’ ( 5 digit),</p>
+
+<p>us_citizen: boolean, name_title: string,</p>
+
+<p>first_name: string, middle_name: string, last_name: string,</p>
+
+<p>name_suffix: string, home_address: string, home_unit: string,</p>
+
+<p>home_city: string, home_state_id: string(2), has_mailing_address: boolean, mailing_address: string, mailing_unit: string, mailing_city: string, mailing_state_id: string(2), mailing_zip_code: string,</p>
+
+<p>race: string,</p>
+
+<p>party: string,</p>
+
+<p>phone: string | Optional. phone_type: string | Optional. email_address: string, opt_in_email: boolean, opt_in_sms: boolean, opt_in_volunteer: boolean, partner_opt_in_email: boolean, partner_opt_in_sms; boolean, partner_opt_in_volunteer: boolean survey_question_1: string, survey_answer_1: string, survey_question_2: string, survey_answer_2: string. finish_with_state: boolean, created_via_api: boolean ]</p>
+
+<p>}</p>
+
+<p>gregistrations</p>
+
+<p>For a given gpartner ­­ a government partner such as a local elections office ­­ checks partner_id (ID in the &ldquo;partners&rdquo; table) and corresponding API key, and returns partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.</p>
+
+<p>Optional &ldquo;email&rdquo; parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional &ldquo;since&rdquo; parameter limits returned records to those c reated after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the &ldquo;status&rdquo; out parameter. The callback parameter is an optional string parameter, exactly as described above.</p>
+
+<p>GET /api/v3/gregistrations.json returns registration records associated with the given government partner</p>
+
+<p>GET: { g partner_id: string (s eries of digits, no specific length), gpartner_API_key: string, (no specific length),</p>
+
+<p>since: string ( optional, UTC datetime format),</p>
+
+<p>email: string ( optional, email name at domain format), callback: string ( optional)</p>
+
+<p>}</p>
+
+<p>Invalid Partner or API key: return 400 { message: string }</p>
+
+<p>Invalid since: return 400</p>
+
+<p>{ field_name: &ldquo;since&rdquo;, message: string ( &ldquo;Invalid parameter value }</p>
+
+<p>Syntax Error: return 400</p>
+
+<p>{ field_name: string (name of field that is not defined for this request),  message: string (&rdquo; Invalid parameter type&quot;) }</p>
+
+<p>Success: return 200</p>
+
+<p>{ registrations:</p>
+
+<p>[ s t a t u s : s t r i n g (  c o m p l e t e , o r r e a s o n f o r i n c o m p l e t e ) ,   create_time: string ( UTC datetime format), complete_time: string ( UTC datetime format),</p>
+
+<p>lang: locale­compatible string ( en/es/fr, etc), first_reg: boolean,</p>
+
+<p>citizen: boolean,</p>
+
+<p>partners</p>
+
+<p>first_registration: boolean, home_zip_code: ‘zzzzz’ ( 5 digit), us_citizen: boolean,</p>
+
+<p>name_title: string,</p>
+
+<p>first_name: string, middle_name: string, last_name: string,</p>
+
+<p>name_suffix: string, home_address: string, home_unit: string,</p>
+
+<p>home_city: string, home_state_id: string(2), has_mailing_address: boolean, mailing_address: string, mailing_unit: string, mailing_city: string, mailing_state_id: string(2), mailing_zip_code: string,</p>
+
+<p>race: string,</p>
+
+<p>party: string,</p>
+
+<p>phone: string | Optional. phone_type: string | Optional. email_address: string, source_tracking_id: string, partner_tracking_id: string ]</p>
+
+<p>}</p>
+
+<p>Creates a new partner, very similar to partner creation in the Web UI of the partner portal.</p>
+
+<p>POST /api/v3/partners.json</p>
+
+<p>POST { partner: { org_name: string,</p>
+
+<p>o r g _ U R L : s t r i n g (  U R L f o r m a t ) ,   org_privacy_url: string  | Optional.  contact_name: string,</p>
+
+<p>contact_email: string ( email address format), contact_phone: string  (nnn­nnn­nnnn format), contact_address: string,</p>
+
+<p>contact_city: string,</p>
+
+<p>contact_state: string ( 2 letter state code),</p>
+
+<p>contact_ZIP: ( nnnnn format)</p>
+
+<p>l o g o _ i m a g e _ U R L : s t r i n g  ( U R L f o r m a t ) ,  </p>
+
+<p>survey_question_1_[locale]: string, (where [locale] may be any of the enabled locale</p>
+
+<p>codes)</p>
+
+<p>survey_question_2_[locale]: string, (where [locale] may be any of the enabled locale</p>
+
+<p>codes)</p>
+
+<p>partner_ask_volunteer: boolean</p>
+
+<p>} }</p>
+
+<p>Syntax Error: return 400</p>
+
+<p>{ field_name: string (name of field that is not defined for this request),  message: string (&ldquo; Invalid parameter type&rdquo;) }</p>
+
+<p>Success: return 200</p>
+
+<p>{ partner_id: string (s eries of digits) } partner</p>
+
+<p>For a given partner, checks partner_id (ID in the &ldquo;partners&rdquo; table) and corresponding API key, and returns partner­specific profile records. Partner profile was created using Rocky web UI or API call POST partners. The callback parameter is an optional string parameter, exactly as described above.</p>
+
+<p>GET /api/v3/partners/[partner_id].json</p>
+
+<p>GET: { partner_API_key: string,  (no specific length),</p>
+
+<p>callback: string ( optional) }</p>
+
+<p>Invalid Partner or API key: return 400 { message: string }</p>
+
+<p>Success: return 200 {</p>
+
+<p>org_name: string</p>
+
+<p>org_URL: string (URL format), org_privacy_url: string (URL format), contact_name: string,</p>
+
+<p>contact_email: string ( email address format), contact_phone: string  (nnn­nnn­nnnn format), contact_address: string,</p>
+
+<p>contact_city: string,</p>
+
+<p>contact_state: string ( 2 letter state code), contact_ZIP: ( nnnnn format)</p>
+
+<p>logo_image_URL: string (URL format),</p>
+
+<p>application_css_URL: string (URL format),</p>
+
+<p>registration_css_URL: string (URL format),</p>
+
+<p>parnter_css_URL: string (URL format),</p>
+
+<p>finish_iframe_url: string (URL format),</p>
+
+<p><code class="prettyprint">survey_question_1_&lt;loc&gt;</code>: string (where <code class="prettyprint">loc</code> may be any enabled locale),
+<code class="prettyprint">survey_question_2_&lt;loc&gt;</code>: string (where <code class="prettyprint">loc</code> may be any enabled locale),
+whitelabeled: boolean,</p>
+
+<p>rtv_email_opt_in: boolean,
+partner_email_opt_in: boolean,
+rtv_sms_opt_in: bollean,
+partner_sms_opt_in: boolean,
+rtv_ask_email_opt_in: boolean,
+partner_ask_email_opt_in: boolean,
+rtv_ask_sms_opt_in: bollean,
+partner_ask_sms_opt_in: boolean,
+ask_for_volunteers: boolean,
+partner_ask_for_volunteers: boolean,</p>
+
+<p>external_tracking_snippet: string,
+registration_instructions_url: string (URL format),
+application_css_present: boolean,
+application_css_url: string (URL format) registration_css_present: boolean,</p>
+
+<p>registration_css_url: string (URL format),
+partner_css_present: boolean,</p>
+
+<p>partner_css_url:string (URL format),
+primary: boolean</p>
+
+<p>}</p>
+
+<h2 id="partner">partner</h2>
+
+<p>For a given partner, checks partner_id (ID in the &ldquo;partners&rdquo; table) and corresponding API key, without an API key, and returns the portion of partner­specific profile records that are not private. Intended for unauthenticated access to public information.</p>
+
+<p>Partner profile was created using Rocky web UI or API call POST partners. The callback parameter is an optional string parameter, exactly as described above.</p>
+
+<p>In addition to the return field names above, there are return fields that are aliases for the above, provided for internal use with Rocky. Though present in return data, the alias fields can be ignored by most callers. They are:</p>
+
+<ul>
+<li>organization = org_name</li>
+<li>url = org_URL</li>
+<li>privacy_url = org_privacy_url</li>
+<li>name = contact_name</li>
+<li>email = contact_email</li>
+<li>phone = contact_phone</li>
+<li>address = contact_address</li>
+<li>city = contact_city</li>
+<li>state_abbrev = contact_state</li>
+<li>zip_code = contact_ZIP</li>
+<li>rtv_email_opt_in = rtv_ask_email_opt_in</li>
+<li>partner_email_opt_in = partner_ask_email_opt_in</li>
+<li>rtv_sms_opt_in = rtv_ask_email_opt_in</li>
+<li>partner_sms_opt_in = partner_ask_sms_opt_in</li>
+</ul>
+
+<p>GET /api/v3/partnerpublicprofiles/[partner_id].json</p>
+
+<p>GET: { partner_id: string (s eries of digits),</p>
+
+<p>callback: string ( optional) }</p>
+
+<p>Invalid Partner or API key: return 400 { message: string }</p>
+
+<p>Success: return 200</p>
+
+<p>{ org_name: string (URL format),  </p>
+
+<p>org_URL: string,</p>
+
+<p>org_privacy_url: string,</p>
+
+<p>logo_image_URL:string  (URL format ),
+survey_question_1: {hash},
+survey_question_2: {hash},
+whitelabeled: boolean,
+rtv_ask_email_opt_in: boolean,
+partner_ask_email_opt_in: boolean,
+rtv_ask_sms_opt_in: bollean,
+partner_ask_sms_opt_in: boolean,
+rtv_ask_volunteer: boolean,
+partner_ask_volunteer: boolean</p>
+
+<p>}</p>
+
+<p>In addition to the return field names above, there are return fields that are aliases for the above, provided for internal use with Rocky. Though present in return data, the alias fields can be ignored by most callers. They are:</p>
+
+<ul>
+<li>organization = org_name</li>
+<li>url = org_URL</li>
+<li>privacy_url = org_privacy_url</li>
+<li>rtv_email_opt_in = rtv_ask_email_opt_in</li>
+<li>partner_email_opt_in = partner_ask_email_opt_in</li>
+<li>rtv_sms_opt_in = rtv_ask_email_opt_in</li>
+<li>partner_sms_opt_in = partner_ask_sms_opt_in</li>
+</ul>
+
+      </div>
+      <div class="dark-box">
+          <div class="lang-selector">
+                <a href="#" data-language-name="JSON">JSON</a>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
