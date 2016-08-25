@@ -7,10 +7,13 @@ language_tabs:
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
 
 search: true
 ---
+
+<aside class="notice">
+This is unofficially maintained API documentation derived from the PDF docs provided by Rock the Vote.
+</aside>
 
 # Overview
 
@@ -392,7 +395,7 @@ Success: return 200
 
 { states: [name: string ( 2 letter state code), url: string ( URL format)] }
 
-state_requirements
+## state_requirements
 
 Most input fields are personal information; most output fields are indicated as state specific. A few fields merit additional description:
 
@@ -440,33 +443,49 @@ Syntax Error | 400 | `{ field_name: string (name of field that is not defined fo
 
 ## pdf_ready
 
+`GET /api/v3/registrations/pdf_read`
+
 For a given registration UID, returns true or false to indicate whether the PDF for that registrant exists.
 
-GET /api/v3/registrations/pdf_ready returns status of PDF generation for the given registrant
+Returns status of PDF generation for the given registrant
 
-GET: { U ID: string ( no specific length),
+GET: {
+UID: string ( no specific length),
+callback: string ( optional)
+}
 
-callback: string ( optional) }
+### Success
 
-Invalid Partner or API key: return 400 { message: string }
+Return status code 200
 
-Not Found UID: return 400
+```json
+{
+  "pdf_ready": "boolean",
+  "UID": "uid"
+}
+```
+
+### Errors
+
+All return status code 400
+
+**Invalid Partner or API key**
+
+{ message: string }
+
+**Not Found UID**
 
 { field_name: "UID", message: string ( "Registrant not found" }
 
-Syntax Error: return 400
+**Syntax Error**
 
 { field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }
 
-Success: return 200
 
-{ pdf_ready: boolean, UID: uid}
 
 ## stop_reminders
 
-POST /api/v3/registrations/stop_reminders F or a given registration UID sets reminders_left to
-
- 0 to prevent further reminder emails.
+POST /api/v3/registrations/stop_reminders F or a given registration UID sets reminders_left to 0 to prevent further reminder emails.
 
 POST: { partner_id: string (s eries of digits, no specific length), partner_API_key: string , (no specific length),
 
@@ -476,25 +495,50 @@ callback: string ( optional)
 
 }
 
-Invalid Partner or API key: return 400 { message: string }
+### Success
 
-Not Found UID: return 400
+```json
+{
+  "UID": "123123123",
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "email_address": "me@me.com",
+  "reminders_stopped": false
+}
+```
+
+Return 200
+
+Field | Type | Notes
+----- | ---- | -----
+UID   | string | No specified length
+first_name | string | 
+last_name | string |
+email_address | string |
+reminders_stopped | boolean | 
+
+### Errors
+
+All return status code 400
+
+Invalid Partner or API key
+
+{ message: string }
+
+Not Found UID
 
 { field_name: "UID", message: string ( "Registrant not found" }
 
-Syntax Error: return 400
+Syntax Error
 
-{ field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }
-
-Success: return 200 {
-
-UID: string (no specific length), first_name: string,
-
-last_name: string, email_address: string, reminders_stopped: boolean
-
+{
+  field_name: string (name of field that is not defined for this request),
+  message: string (" Invalid parameter type")
 }
 
- registrations
+
+
+## registrations
 
 For a given partner, checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
 
@@ -522,29 +566,52 @@ Success: return 200
 
 { registrations:
 
-[ s t a t u s : s t r i n g (  c o m p l e t e , o r r e a s o n f o r i n c o m p l e t e ) ,   create_time: string ( UTC datetime format), complete_time: string ( UTC datetime format),
-
-lang: locale­compatible string ( en/es/fr, etc), first_reg: boolean,
-
-citizen: boolean, first_registration: boolean, home_zip_code: ‘zzzzz’ ( 5 digit),
-
- us_citizen: boolean, name_title: string,
-
-first_name: string, middle_name: string, last_name: string,
-
-name_suffix: string, home_address: string, home_unit: string,
-
-home_city: string, home_state_id: string(2), has_mailing_address: boolean, mailing_address: string, mailing_unit: string, mailing_city: string, mailing_state_id: string(2), mailing_zip_code: string,
-
+[ status: string (complete, or reason for incomplete),
+create_time: string ( UTC datetime format),
+complete_time: string ( UTC datetime format),
+lang: locale­compatible string ( en/es/fr, etc),
+first_reg: boolean,
+citizen: boolean,
+first_registration: boolean,
+home_zip_code: ‘zzzzz’ ( 5 digit),
+us_citizen: boolean,
+name_title: string,
+first_name: string,
+middle_name: string,
+last_name: string,
+name_suffix: string,
+home_address: string,
+home_unit: string,
+home_city: string,
+home_state_id: string(2),
+has_mailing_address: boolean,
+mailing_address: string,
+mailing_unit: string,
+mailing_city: string,
+mailing_state_id: string(2),
+mailing_zip_code: string,
 race: string,
-
 party: string,
-
-phone: string | Optional. phone_type: string | Optional. email_address: string, opt_in_email: boolean, opt_in_sms: boolean, opt_in_volunteer: boolean, partner_opt_in_email: boolean, partner_opt_in_sms; boolean, partner_opt_in_volunteer: boolean survey_question_1: string, survey_answer_1: string, survey_question_2: string, survey_answer_2: string. finish_with_state: boolean, created_via_api: boolean ]
+phone: string | Optional,
+phone_type: string | Optional,
+email_address: string,
+opt_in_email: boolean,
+opt_in_sms: boolean,
+opt_in_volunteer: boolean,
+partner_opt_in_email: boolean,
+partner_opt_in_sms; boolean,
+partner_opt_in_volunteer: boolean,
+ survey_question_1: string,
+survey_answer_1: string,
+survey_question_2: string,
+survey_answer_2: string,
+finish_with_state: boolean,
+created_via_api: boolean
+]
 
 }
 
- gregistrations
+## gregistrations
 
 For a given gpartner ­­ a government partner such as a local elections office ­­ checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.
 
@@ -580,8 +647,6 @@ lang: locale­compatible string ( en/es/fr, etc), first_reg: boolean,
 
 citizen: boolean,
 
- partners
-
 first_registration: boolean, home_zip_code: ‘zzzzz’ ( 5 digit), us_citizen: boolean,
 
 name_title: string,
@@ -596,38 +661,31 @@ race: string,
 
 party: string,
 
-phone: string | Optional. phone_type: string | Optional. email_address: string, source_tracking_id: string, partner_tracking_id: string ]
+phone: string | Optional,
+phone_type: string | Optional. email_address: string, source_tracking_id: string, partner_tracking_id: string ]
 
 }
 
- Creates a new partner, very similar to partner creation in the Web UI of the partner portal.
+## partners
+
+Creates a new partner, very similar to partner creation in the Web UI of the partner portal.
 
 POST /api/v3/partners.json
 
 POST { partner: { org_name: string,
-
-o r g _ U R L : s t r i n g (  U R L f o r m a t ) ,   org_privacy_url: string  | Optional.  contact_name: string,
-
-contact_email: string ( email address format), contact_phone: string  (nnn­nnn­nnnn format), contact_address: string,
-
+org_URL: string (URL format),
+org_privacy_url: string  | Optional,
+,contact_name: string,
+contact_email: string ( email address format),
+contact_phone: string  (nnn­nnn­nnnn format),
+contact_address: string,
 contact_city: string,
-
 contact_state: string ( 2 letter state code),
-
 contact_ZIP: ( nnnnn format)
-
-l o g o _ i m a g e _ U R L : s t r i n g  ( U R L f o r m a t ) ,  
-
-survey_question_1_[locale]: string, (where [locale] may be any of the enabled locale
-
-codes)
-
-survey_question_2_[locale]: string, (where [locale] may be any of the enabled locale
-
-codes)
-
+logo_image_URL: string (URL format),
+survey_question_1_[locale]: string, (where [locale] may be any of the enabled locale codes)
+survey_question_2_[locale]: string, (where [locale] may be any of the enabled locale codes)
 partner_ask_volunteer: boolean
-
 } }
 
 Syntax Error: return 400
@@ -651,29 +709,21 @@ callback: string ( optional) }
 Success: return 200 {
 
 org_name: string
-
 org_URL: string (URL format), org_privacy_url: string (URL format), contact_name: string,
-
-contact_email: string ( email address format), contact_phone: string  (nnn­nnn­nnnn format), contact_address: string,
-
+contact_email: string ( email address format),
+contact_phone: string  (nnn­nnn­nnnn format),
+contact_address: string,
 contact_city: string,
-
-contact_state: string ( 2 letter state code), contact_ZIP: ( nnnnn format)
-
+contact_state: string ( 2 letter state code),
+contact_ZIP: ( nnnnn format),
 logo_image_URL: string (URL format),
-
 application_css_URL: string (URL format),
-
 registration_css_URL: string (URL format),
-
 parnter_css_URL: string (URL format),
-
 finish_iframe_url: string (URL format),
-
 `survey_question_1_<loc>`: string (where `loc` may be any enabled locale),
 `survey_question_2_<loc>`: string (where `loc` may be any enabled locale),
 whitelabeled: boolean,
-
 rtv_email_opt_in: boolean,
 partner_email_opt_in: boolean,
 rtv_sms_opt_in: bollean,
@@ -684,18 +734,14 @@ rtv_ask_sms_opt_in: bollean,
 partner_ask_sms_opt_in: boolean,
 ask_for_volunteers: boolean,
 partner_ask_for_volunteers: boolean,
-
 external_tracking_snippet: string,
 registration_instructions_url: string (URL format),
 application_css_present: boolean,
 application_css_url: string (URL format) registration_css_present: boolean,
-
 registration_css_url: string (URL format),
 partner_css_present: boolean,
-
 partner_css_url:string (URL format),
 primary: boolean
-
 }
 
 ## partner
@@ -731,12 +777,10 @@ Invalid Partner or API key: return 400 { message: string }
 
 Success: return 200
 
-{ org_name: string (URL format),  
-
+{
+org_name: string (URL format),
 org_URL: string,
-
- org_privacy_url: string,
-
+org_privacy_url: string,
 logo_image_URL:string  (URL format ),
 survey_question_1: {hash},
 survey_question_2: {hash},
@@ -747,7 +791,6 @@ rtv_ask_sms_opt_in: bollean,
 partner_ask_sms_opt_in: boolean,
 rtv_ask_volunteer: boolean,
 partner_ask_volunteer: boolean
-
 }
 
 In addition to the return field names above, there are return fields that are aliases for the above, provided for internal use with Rocky. Though present in return data, the alias fields can be ignored by most callers. They are:
