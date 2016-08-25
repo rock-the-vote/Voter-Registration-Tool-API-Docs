@@ -76,7 +76,7 @@ All requests and responses are JSON format. All fields are required unless other
 
 Creates a new registrant record using the input parameter data; and also triggers the side effects of a new record, e.g. sending confirmation email.
 
-### Fields
+<h3 id="registration-fields">Fields</h3>
 
 Most fields are personal information. A few fields merit additional description:
 
@@ -136,7 +136,7 @@ Other Notes
     "opt_in_volunteer": false,
     "partner_opt_in_email": true,
     "partner_opt_in_sms": false,
-    "partner_opt_in_volunteer": true
+    "partner_opt_in_volunteer": true"
   }
 }
 ```
@@ -223,7 +223,7 @@ Post JSON dictionary of fields nested under `registration`
 
 Status Code 200, returns `pdfurl` and `uid`
 
-### Errors
+<h3 id="registrations-errors">Errors</h3>
 
 All return status code 400
 
@@ -281,77 +281,166 @@ Returns a `message` in the format "Question N required when Answer N provided"
 
 ## bulk_registrations
 
-Creates 1­n incomplete registrant records. Used for creating data in the core rocky system for statistics, but does not cause emails to be sent or PDFs to be created. Validations are not performed
+`POST /api/v3/registrations/bulk`
 
-POST /api/v3/registrations/bulk
+Creates 1­ or multiple incomplete registrant records. Used for creating data in the core Rocky system for statistics, but does not cause emails to be sent or PDFs to be created. Validations are not performed.
 
-POST { registrations: [ {
+<h3 id="bulk-registration-fields">Fields</h3>
 
-status: string (indicates a step number that the user stopped at) ineligible_non_participating_state: boolean (whether the registrant is ineligible due to the state not participating),
+Fields in addition to [registration interface definition fields](#registration-fields)
 
-ineligible_age: boolean (whether the registrant is ineligible due to being too young),
+Field | Type | Notes
+----- | ---- | -----
+status | string | Indicates a step number that the user stopped at
+ineligible_non_participating_state | boolean | Whether the registrant is ineligible due to the state not participating
+ineligible_age | boolean | Whether the registrant is ineligible due to being too young
+ineligible_non_citizen | boolean | Whether the registrant is ineligible due to not being a US citizen
+under_18_ok | boolean | Whether the registrant decided to proceed despite being under 18
+remind_when_18 | boolean | Whether the registrant requested a reminder when 18
+age | integer | Age of registrant
+javascript_disabled | boolean | Whether the user had javascript disabled
+using_state_online_registration | boolean | Whether the user selected to use the state online reg system
+finish_with_state | boolean  | Whether the user is in a "finish_with_state" flow
 
-ineligible_non_citizen: boolean (whether the registrant is ineligible due to not being a US citizen), under 18), 18),
+### HTTP Request
 
-under_18_ok: boolean (whether the registrant decided to proceed despite being remind_when_18: boolean (whether the registrant requested a reminder when
+`POST` with JSON list of `registration` dictionaries combining [bulk](#bulk-registration-fields) and [normal](#registration-fields) registration fields
 
-age: integer (age of registrant),
-javascript_disabled: boolean (whether the user had javascript disabled), using_state_online_registration: boolean (whether the user selected to use the state online reg system),
-finish_with_state: boolean (whether the user is in a "finish_with_state" flow) See registrations interface definition for remaining fields of "registration" input record
+```json
+{
+  "registrations": [
+    {
+      "status": "1",
+      "ineligible_non_participating_state": false,
+      "ineligible_age": false,
+      "ineligible_non_citizen": false,
+      "under_18_ok": false,
+      "remind_when_18": false,
+      "age": 20,
+      "javascript_disabled": false,
+      "using_state_online_registration": false,
+      "finish_with_state": false,
+      "lang": "en",
+      "partner_id": "123456789",
+      "send_confirmation_reminder_emails": true,
+      "created_at": "01102016 11:22:33",
+      "updated_at": "01102016 12:23:56",
+      "date_of_birth": "01011990",
+      "id_number": "1234",
+      "email_address": "me@me.com",
+      "first_registration": true,
+      "home_zip_code": "01234",
+      "us_citizen": true,
+      "has_state_license": true,
+      "is_eighteen_or_older": true,
+      "name_title": "Mrs.",
+      "last_name": "Smith",
+      "home_address": "123 Main St",
+      "home_city": "Big Town",
+      "home_state_id": "CA",
+      "has_mailing_address": false,
+      "race": "White (not Hispanic)",
+      "change_of_name": false,
+      "change_of_address": false,
+      "opt_in_email": true,
+      "opt_in_sms": true,
+      "opt_in_volunteer": false,
+      "partner_opt_in_email": true,
+      "partner_opt_in_sms": false,
+      "partner_opt_in_volunteer": true
+    }
+  ]
+}
+```
 
-}] }
+### Success
 
-Success: return 200
+Status code 200 with number of `abandoned_registrations` as an integer, which should be the number of registrations submitted.
 
-{ abandoned_registrations: integer (number of records written)}
+```json
+{
+  "abandoned_registrations": "integer (number of records written)"
+}
+```
 
-Error: return 400
+### Error
 
-[{ response_hash }]
+If any registrations have an error, a status code 400 is returned, with a JSON list of responses for each record that is either an empty hash (`{}`) if there are no errors for that user, or a dictionary with `type`, `field_name` and `message` if there is an error
 
-Return an array of responses for each record that is either
+> Example object for a user with an error
 
-{ } (empty hash)
-
-or
-
-{ type: string (ValidationError, SyntaxError, UnsupportedLanguageError),
-
-f i e l d _ n a m e : s t r i n g ( f  i e l d w h e r e e r r o r o c c u r r e d ) ,  
-
-message: string (determined by Rocky, for display by caller, in specified lang) }]
+```json
+{
+  "type": "string (ValidationError, SyntaxError, UnsupportedLanguageError)",
+  "field_name": "string (field where error occurred)",
+  "message": "string (determined by Rocky, for display by caller, in specified lang)"
+}
+```
 
 ## gregistrations
+
+`POST /api/v3/gregistrations.json`
 
 Creates a new registrant record using the input parameter data, for the use case where the user was eligible to finish their registration on a government operated state­ specific web site, chose to be re­directed there, and did not return ­­ presumably because they finished registration on the state’s site.
 
 Differs from registrations only in the following ways:
 
-* Only the following parameters are required: lang, partner_id, send_confirmation_reminder_emails, d ate_of_birth, email_address, home_zip_code, us_citizen, name_title, last_name
-* If send_confirmation_reminder_emails is true, then the emails sent are the the emails that are pertinent to this use case, rather than the standard use case of completing a registration using the Rocky UI
-* The PDF is not generated, and therefore the async parameter has no effect
+* Only the following parameters are required
+  * lang
+  * partner_id
+  * send_confirmation_reminder_emails
+  * date_of_birth
+  * email_address
+  * home_zip_code
+  * us_citizen
+  * name_title
+  * last_name
+* If `send_confirmation_reminder_emails` is true, then the emails sent are the the emails that are pertinent to this use case, rather than the standard use case of completing a registration using the Rocky UI
+* The PDF is not generated, and therefore the `async` parameter has no effect
 * Success has no output parameters
 * There is an additional error return code
 
-POST /api/v3/gregistrations.json
+### HTTP Request
 
-POST { registration: {
+```json
+{
+  "registration": {
+    "lang": "en",
+    "partner_id": "123456789",
+    "send_confirmation_reminder_emails": true,
+    "date_of_birth": "01011990",
+    "email_address": "me@me.com",
+    "home_zip_code": "01234",
+    "us_citizen": true,
+    "name_title": "Mrs.",
+    "last_name": "Smith"
+  }
+}
+```
 
-See registrations interface definition for fields of "registration" input record
+`POST /api/v3/gregistrations.json`
 
-}}
+Post a JSON object with key `registration` and value of a registration object
 
-Success: return 200
+### Success
 
-Unsupported state: return 400 { message: string }
+Status code 200, no body
 
-See registrations interface definition for other return data definitions.
+### Errors
+
+**Unsupported state**
+
+Return 400 with JSON object with one key: `message`
+
+See [registrations interface definition errors](#registrations-errors) for other return data definitions.
 
 ## bulk_gregistrations
 
 Same as gregistrations but expects an array of registrant records and returns the number of records created.
 
- POST /api/v3/bulk_gregistrations.json
+### HTTP Request
+
+`POST /api/v3/bulk_gregistrations.json`
 
 POST { bulk_gregistrations: [{
 
@@ -365,7 +454,9 @@ See registrations interface definition for fields of "registration" input record
 
 }]}
 
-Success: return 200
+### Success Response
+
+Status code 200
 
 { bulk_gregistrations: integer (number of records written)}
 
@@ -389,7 +480,9 @@ message: string (d etermined by Rocky, for display by caller, in specified lang)
 
 Returns a list of state for which Rocky current supports per­state integration with states. There are no input parameters. State return data is the 2 letter code for the state, and the URL to use to send registrant data to the state’s web site.
 
-GET /api/v3/gregistrationstates.json
+### HTTP Request
+
+`GET /api/v3/gregistrationstates.json`
 
 Success: return 200
 
