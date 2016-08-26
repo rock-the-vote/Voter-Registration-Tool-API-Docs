@@ -273,43 +273,6 @@ This is unofficially maintained API documentation derived from the PDF docs prov
 </ul></li>
 </ul>
 
-<blockquote>
-<p>Example POST request payload (minimum required fields)</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"registration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"lang"</span><span class="p">:</span><span class="w"> </span><span class="s2">"en"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"partner_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456789"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"send_confirmation_reminder_emails"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01102016 11:22:33"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01102016 12:23:56"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"date_of_birth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01011990"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"id_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"email_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"me@me.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"first_registration"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"home_zip_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01234"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"us_citizen"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"has_state_license"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"is_eighteen_or_older"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mrs."</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"home_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123 Main St"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"home_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Big Town"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"home_state_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CA"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"has_mailing_address"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"race"</span><span class="p">:</span><span class="w"> </span><span class="s2">"White (not Hispanic)"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"change_of_name"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"change_of_address"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"opt_in_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"opt_in_sms"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"opt_in_volunteer"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"partner_opt_in_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"partner_opt_in_sms"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"partner_opt_in_volunteer"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="err">"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
 <table><thead>
 <tr>
 <th>Field</th>
@@ -802,51 +765,6 @@ This is unofficially maintained API documentation derived from the PDF docs prov
 <p><code class="prettyprint">POST /api/v3/registrations/bulk</code></p>
 
 <p>Body is JSON list of <code class="prettyprint">registration</code> dictionaries combining <a href="#bulk-registration-fields">bulk</a> and <a href="#registration-fields">normal</a> registration fields</p>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"registrations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"ineligible_non_participating_state"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"ineligible_age"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"ineligible_non_citizen"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"under_18_ok"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"remind_when_18"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"javascript_disabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"using_state_online_registration"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"finish_with_state"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"lang"</span><span class="p">:</span><span class="w"> </span><span class="s2">"en"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"partner_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456789"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"send_confirmation_reminder_emails"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01102016 11:22:33"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01102016 12:23:56"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"date_of_birth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01011990"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"id_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"email_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"me@me.com"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"first_registration"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"home_zip_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01234"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"us_citizen"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"has_state_license"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"is_eighteen_or_older"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"name_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mrs."</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"home_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123 Main St"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"home_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Big Town"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"home_state_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CA"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"has_mailing_address"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"race"</span><span class="p">:</span><span class="w"> </span><span class="s2">"White (not Hispanic)"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"change_of_name"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"change_of_address"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"opt_in_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"opt_in_sms"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"opt_in_volunteer"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"partner_opt_in_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"partner_opt_in_sms"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"partner_opt_in_volunteer"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
 
 <h3 id="success">Success</h3>
 
@@ -919,20 +837,6 @@ This is unofficially maintained API documentation derived from the PDF docs prov
 </ul>
 
 <h3 id="http-request">HTTP Request</h3>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"registration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"lang"</span><span class="p">:</span><span class="w"> </span><span class="s2">"en"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"partner_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456789"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"send_confirmation_reminder_emails"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"date_of_birth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01011990"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"email_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"me@me.com"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"home_zip_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01234"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"us_citizen"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mrs."</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
 
 <p><code class="prettyprint">POST /api/v3/gregistrations.json</code></p>
 
@@ -1002,27 +906,9 @@ This is unofficially maintained API documentation derived from the PDF docs prov
 
 <p>Body is a dictionary with key <code class="prettyprint">bulk_gregistrations</code>, and the value is an integer with the number of records written, which should be the number of registrations posted.</p>
 
-<blockquote>
-<p>Success Response</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"bulk_gregistrations"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integer (number of records written)"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
 <h3 id="error">Error</h3>
 
 <p>If any registrations have an error, a status code 400 is returned, with a JSON list of responses for each record that is either an empty hash ({}) if there are no errors for that user, or a dictionary with <code class="prettyprint">type</code>, <code class="prettyprint">field_name</code> and <code class="prettyprint">message</code> if there is an error</p>
-
-<blockquote>
-<p>Example object for a user with an error</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string (ValidationError, SyntaxError, UnsupportedLanguageError)"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"field_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string (field where error occurred)"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string (determined by Rocky, for display by caller, in specified lang)"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
 
 <h2 id="gregistrationstates">gregistrationstates</h2>
 
@@ -1035,23 +921,6 @@ This is unofficially maintained API documentation derived from the PDF docs prov
 <h3 id="response">Response</h3>
 
 <p>Returns status code 200, with both of a dictionary with one key, <code class="prettyprint">states</code>, which is a list of dictionaries with two keys: <code class="prettyprint">name</code> which is the 2 letter state code, and <code class="prettyprint">url</code> which is a string URL.</p>
-
-<blockquote>
-<p>Example response (truncated)</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"states"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AZ"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://servicearizona.com/webapp/evoter/selectLanguage"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CA"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://covrtest.sos.ca.gov?language=LANGUAGE&amp;t=p&amp;CovrAgencyKey=AGENCY_KEY&amp;PostingAgencyRecordId=TOKEN"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
 
 <h2 id="state_requirements">state_requirements</h2>
 
@@ -1429,14 +1298,6 @@ This is unofficially maintained API documentation derived from the PDF docs prov
 </tbody></table>
 
 <h3 id="success">Success</h3>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"UID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123123123"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jane"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"email_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"me@me.com"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"reminders_stopped"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
 
 <table><thead>
 <tr>
