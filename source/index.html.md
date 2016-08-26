@@ -2,9 +2,6 @@
 
 title: Rocky RESTful API Version 3.0 (Unofficial)
 
-language_tabs:
-  - JSON
-
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
 
@@ -66,13 +63,21 @@ Added these interfaces:
 
 Since this addition did not modify the existing API, did not rev from v2 to v3.
 
+# Status Codes
+
+All successful requests have response status code 200.
+
+All requests with errors stemming from invalid or missing inputs have status code 400.
+
+# Response Bodies
+
+All response bodies are JSON dictionaries, with the key/value pairs described
+
 # Interface Definitions
 
 All requests and responses are JSON format. All fields are required unless otherwise specified as optional. All string fields have no length or format restrictions, unless specifically stated. Some field values have specific formats; others have parenthesized notations on field values.
 
 ## registrations
-
-`POST /api/v3/registrations.json`
 
 Creates a new registrant record using the input parameter data; and also triggers the side effects of a new record, e.g. sending confirmation email.
 
@@ -208,86 +213,55 @@ async | boolean | Optional. Default is "true"
 
 ### HTTP Request
 
+`POST /api/v3/registrations.json`
+
 Post JSON dictionary of fields nested under `registration`
 
 ### Success Response 
 
-> Success response
-
-```json
-{
-  "pdfurl": "URL (for the generated PDF)",
-  "uid": "UID string"
-} 
-```
-
-Status Code 200, returns `pdfurl` and `uid`
+Key | Value Type | Note
+--- | ---------- | -----
+pdfurl | string | URL (for the generated PDF)
+uid | string | UID string
 
 <h3 id="registrations-errors">Errors</h3>
 
-All return status code 400
+#### Validation Error
 
-**Validation Error**
-
-> Validation Error
-
-Returns `field_name` where error occurred, and a `message` about the error in the specified language.
-
-```json
-{
-  "field_name": "string (field where error occurred)",
-  "message": "string (determined by Rocky, for display by caller, in specified lang)"
-}  
-```
-
-**Syntax Error**
-
-> Syntax Error
-
-Returns `field_name` of missing required field, and the `message` "Invalie parameter type".
-
-```json
-{
-  "field_name": "string (name of field that is not defined for this request)",  
-  "message": "Invalid parameter type"
-}
-```
-
-**Unsupported language**
-
-Returns a `message`
-
-> Unsupported language
-
-```json
-{
-  "message": "string"
-}
-```
-
-**Survey Question Error**
-
-Returns a `message` in the format "Question N required when Answer N provided"
-
-> Survey Question Error
-
-```json
-{
-  "message": "string ('Question N required when Answer N provided')"
-}
-```
+Key | Value Type | Note
+--- | ---------- | -----
+field_name | string | Field where error occurred
+message | string | Determined by Rocky, for display by caller, in specified lang
 
 
+#### Syntax Error
+
+Key | Value Type | Note
+--- | ---------- | -----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
+
+
+#### Unsupported language
+
+Key | Value Type
+--- | ----------
+message | string
+
+
+#### Survey Question Error
+
+Key | Value Type | Note
+--- | ---------- | ------
+message | string | Format: 'Question N required when Answer N provided'
 
 ## bulk_registrations
-
-`POST /api/v3/registrations/bulk`
 
 Creates 1­ or multiple incomplete registrant records. Used for creating data in the core Rocky system for statistics, but does not cause emails to be sent or PDFs to be created. Validations are not performed.
 
 <h3 id="bulk-registration-fields">Fields</h3>
 
-Fields in addition to [registration interface definition fields](#registration-fields)
+[Registration interface definition fields](#registration-fields), plus these fields (all required):
 
 Field | Type | Notes
 ----- | ---- | -----
@@ -304,7 +278,9 @@ finish_with_state | boolean  | Whether the user is in a "finish_with_state" flow
 
 ### HTTP Request
 
-`POST` with JSON list of `registration` dictionaries combining [bulk](#bulk-registration-fields) and [normal](#registration-fields) registration fields
+`POST /api/v3/registrations/bulk`
+
+Body is JSON list of `registration` dictionaries combining [bulk](#bulk-registration-fields) and [normal](#registration-fields) registration fields
 
 ```json
 {
@@ -355,31 +331,23 @@ finish_with_state | boolean  | Whether the user is in a "finish_with_state" flow
 
 ### Success
 
-Status code 200 with number of `abandoned_registrations` as an integer, which should be the number of registrations submitted.
+Field | Type | Notes
+----- | ---- | -----
+abandoned_registrations | integer | Number of records written
 
-```json
-{
-  "abandoned_registrations": "integer (number of records written)"
-}
-```
 
-### Error
+### Error Response
 
-If any registrations have an error, a status code 400 is returned, with a JSON list of responses for each record that is either an empty hash (`{}`) if there are no errors for that user, or a dictionary with `type`, `field_name` and `message` if there is an error
+If any registrations can't be saved, status code 400 is returned, with a JSON list of responses for each record that is either an empty hash (`{}`) if there are no errors for that user, or a dictionary with `type`, `field_name` and `message` if there is an error
 
-> Example object for a user with an error
+Field | Type | Notes
+----- | ---- | -----
+type | string | ValidationError, SyntaxError, UnsupportedLanguageError
+field_name | string | Field where error occurred
+message | string | Determined by Rocky, for display by caller, in specified lang
 
-```json
-{
-  "type": "string (ValidationError, SyntaxError, UnsupportedLanguageError)",
-  "field_name": "string (field where error occurred)",
-  "message": "string (determined by Rocky, for display by caller, in specified lang)"
-}
-```
 
 ## gregistrations
-
-`POST /api/v3/gregistrations.json`
 
 Creates a new registrant record using the input parameter data, for the use case where the user was eligible to finish their registration on a government operated state­ specific web site, chose to be re­directed there, and did not return ­­ presumably because they finished registration on the state’s site.
 
@@ -424,13 +392,15 @@ Post a JSON object with key `registration` and value of a registration object
 
 ### Success
 
-Status code 200, no body
+No body
 
 ### Errors
 
-**Unsupported state**
+#### Unsupported state
 
-Return 400 with JSON object with one key: `message`
+Key | Value Type
+--- | ---------
+message | string
 
 See [registrations interface definition errors](#registrations-errors) for other return data definitions.
 
@@ -438,155 +408,231 @@ See [registrations interface definition errors](#registrations-errors) for other
 
 Same as gregistrations but expects an array of registrant records and returns the number of records created.
 
+### Fields
+
+[Registration interface definition fields](#registration-fields), plus these fields (all required):
+
+Field | Type | Notes
+----- | ---- | -----
+status | string | Indicates a step number that the user stopped at
+created_at | string | UTC datetime format
+updated_at | string | UTC datetime format
+
 ### HTTP Request
 
 `POST /api/v3/bulk_gregistrations.json`
 
-POST { bulk_gregistrations: [{
-
-status: string (indicates a step number that the user stopped at)
-
-created_at: ( UTC datetime format),
-
-updated_at: ( UTC datetime format),
-
-See registrations interface definition for fields of "registration" input record
-
-}]}
+Body is JSON dictionary with a single key, `bulk_gregistrations`, and value as a list of bulk registration dictionaries, as described above.
 
 ### Success Response
 
-Status code 200
+Body is a dictionary with key `bulk_gregistrations`, and the value is an integer with the number of records written, which should be the number of registrations posted.
 
-{ bulk_gregistrations: integer (number of records written)}
+> Success Response
 
-Error: return 400
+```json
+{
+  "bulk_gregistrations": "integer (number of records written)"
+}
+```
 
-[{ response_hash }]
+### Error
 
-Return an array of responses for each record that is either
+If any registrations have an error, a status code 400 is returned, with a JSON list of responses for each record that is either an empty hash ({}) if there are no errors for that user, or a dictionary with `type`, `field_name` and `message` if there is an error
 
-{ } (empty hash)
+> Example object for a user with an error
 
-or
-
-{ type: string (ValidationError, SyntaxError, UnsupportedLanguageError),
-
-f i e l d _ n a m e : s t r i n g ( f  i e l d w h e r e e r r o r o c c u r r e d ) ,  
-
-message: string (d etermined by Rocky, for display by caller, in specified lang) }]
+```json
+{
+  "type": "string (ValidationError, SyntaxError, UnsupportedLanguageError)",
+  "field_name": "string (field where error occurred)",
+  "message": "string (determined by Rocky, for display by caller, in specified lang)"
+}
+```
 
 ## gregistrationstates
 
-Returns a list of state for which Rocky current supports per­state integration with states. There are no input parameters. State return data is the 2 letter code for the state, and the URL to use to send registrant data to the state’s web site.
+Returns a list of state for which Rocky current supports per­-state integration with states. There are no input parameters. State return data is the 2 letter code for the state, and the URL to use to send registrant data to the state’s web site.
 
 ### HTTP Request
 
 `GET /api/v3/gregistrationstates.json`
 
-Success: return 200
+### Response
 
-{ states: [name: string ( 2 letter state code), url: string ( URL format)] }
+Returns status code 200, with both of a dictionary with one key, `states`, which is a list of dictionaries with two keys: `name` which is the 2 letter state code, and `url` which is a string URL.
 
-## state_requirements
-
-Most input fields are personal information; most output fields are indicated as state specific. A few fields merit additional description:
-
-* For input, one of home_state_id and home_zip_code is required. If both are provided, they must match. Really only one is needed.
-* fields named `<foo>_msg` contain a string with state­ specific information that explains the state­ specific situation of `<foo>`, such as what the requirements are for reporting race, or stating party affiliation, or why the state does not allow party affiliation, or what the state’s rules are about ID numbers for voter registration, or for minimum age for filing a voter registration application.
-* fields named `sos_<foo>` refer to the contract information for the office of Secretary of State for the state specified in the home_state_id input field
-* invalid state error is for a home_state_id input field value that is not a state, e.g. AJ
-* non participating state error is for a correct state id, but for a state that does not participate in mail­in NVRA­form registration; the explanatory msg is state­ specific
-* to validate the age, make sure the person is 18+ yo and return localized error message if she’s not
-* no_party_msg is the name of the last option for party affiliation; in some states it is "none" while in others it is "decline to state" and over time any state can change its preferences
-* requires_party_msg explains the state’s rules for whether an application must or may include a party affiliation selection
-* callback is an optional string parameter, exactly as described above
-
-GET /api/v3/state_requirements.json checks state eligibility and provides state­ specific fields information
-
-GET: { lang: locale­compatible string (en/es, etc), home_state_id: string(2),
-
-home_zip_code: ‘zzzzz’ ( 5 digit),
-
- date_of_birth: ‘mm­dd­yyyy’  | Optional |
-
-callback: string (optional) }
-
-Success: return 200
-
-{ requires_race: boolean,
-
-requires_race_msg: string, requires_party: boolean, requires_party_msg: string, no_party: boolean, no_party_msg: string, party_list: [ party_name: string], id_length_min: integer, id_length_max: integer, id_number_msg: string, sos_address: string, sos_phone: string,
-
-sos_url: string,
-
-sub_18_msg: string }
-
-### Errors
-
-Problem | Status Code | Message
-------- | ----------- | -------
-Invalid state ID | 400 |  `{ message: string }`
-Invalid ZIP code | 400 | `{ message: string }`
-Incorrect ZIP code ( ZIP does not match state) | 400 | `{ message: string }`
-Non­participating state | 400 | `{ message: string ( state specific) } `
-Invalid age | 400 | | `{ message: string ( state specific)}`
-Unsupported language | 400 | `{ message: string }`
-Syntax Error | 400 | `{ field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }`
-
-## pdf_ready
-
-`GET /api/v3/registrations/pdf_read`
-
-For a given registration UID, returns true or false to indicate whether the PDF for that registrant exists.
-
-Returns status of PDF generation for the given registrant
-
-GET: {
-UID: string ( no specific length),
-callback: string ( optional)
-}
-
-### Success
-
-Return status code 200
+> Example response (truncated)
 
 ```json
 {
-  "pdf_ready": "boolean",
-  "UID": "uid"
+  "states": [
+    {
+      "name": "AZ",
+      "url": "https://servicearizona.com/webapp/evoter/selectLanguage"
+    },
+    {
+      "name": "CA",
+      "url": "https://covrtest.sos.ca.gov?language=LANGUAGE&t=p&CovrAgencyKey=AGENCY_KEY&PostingAgencyRecordId=TOKEN"
+    }
+  ]
 }
 ```
 
+## state_requirements
+
+Checks state eligibility and provides state­ specific fields information
+
+Most input fields are personal information; most output fields are indicated as state specific. A few fields merit additional description:
+
+* For input, one of `home_state_id` and `home_zip_code` is required. If both are provided, they must match. Really only one is needed.
+* Fields named `<foo>_msg` contain a string with state­ specific information that explains the state­ specific situation of `<foo>`, such as what the requirements are for reporting race, or stating party affiliation, or why the state does not allow party affiliation, or what the state’s rules are about ID numbers for voter registration, or for minimum age for filing a voter registration application.
+* Fields named `sos_<foo>` refer to the contract information for the office of Secretary of State for the state specified in the `home_state_id` input field
+* Invalid state error is for a `home_state_id` input field value that is not a state, e.g. AJ
+* Non-participating state error is for a correct state id, but for a state that does not participate in mail­in NVRA­ form registration; the explanatory msg is state­ specific
+* To validate the age, make sure the person is 18+ yo and return localized error message if she’s not
+* `no_party_msg` is the name of the last option for party affiliation; in some states it is "none" while in others it is "decline to state" and over time any state can change its preferences
+* `requires_party_msg` explains the state’s rules for whether an application must or may include a party affiliation selection
+* `callback` is an optional string parameter, exactly as described above
+
+### HTTP Request
+
+`GET /api/v3/state_requirements.json`
+
+Parameter | Type | Notes
+--------- | ---- | -----
+lang | string | Required. Locale­ compatible string (en/es, etc)
+home_state_id | string | Required. 2-character state abbreviation
+home_zip_code | string | Required. ‘zzzzz’ 5 digit zip code
+date_of_birth | string | Optional. ‘mm­dd­yyyy’
+callback | string | Optional.
+
+### Success response
+
+Key | Value Type
+--- | ----
+requires_race | boolean
+requires_race_msg | string
+requires_party | boolean
+requires_party_msg | string
+no_party | boolean
+no_party_msg | string
+party_list | list of strings
+id_length_min | integer
+id_length_max | integer
+id_number_msg | string
+sos_address | string
+sos_phone | string
+sos_url | string
+sub_18_msg | string
+
 ### Errors
 
-All return status code 400
+#### Invalid state ID
 
-**Invalid Partner or API key**
+Key | Value Type
+--- | ----------
+message | string
 
-{ message: string }
+#### Invalid ZIP code
 
-**Not Found UID**
+Key | Value Type
+--- | ----------
+message | string
 
-{ field_name: "UID", message: string ( "Registrant not found" }
+#### Incorrect ZIP code ( ZIP does not match state)
 
-**Syntax Error**
+Key | Value Type
+--- | ----------
+message | string
 
-{ field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }
+#### Non­participating state
 
+Key | Value Type | Notes
+--- | ---------- | --------
+message | string | State specific
+
+#### Invalid age
+
+Key | Value Type | Notes
+--- | ---------- | --------
+message | string | State specific
+
+#### Unsupported language
+
+Key | Value Type
+--- | ----------
+message | string
+
+#### Syntax Error
+
+Key | Value Type | Notes
+--- | ---------- | -------
+message | string | 
+field_name | string | Name of field that is not defined for this request
+
+## pdf_ready
+
+For a given registration UID, returns true or false to indicate whether the PDF for that registrant exists.
+
+### HTTP Request
+
+`GET /api/v3/registrations/pdf_read`
+
+Returns status of PDF generation for the given registrant
+
+Parameter | Type | Notes
+--------- | ---- | -----
+UID | string | Required.
+callback | string | Optional.
+
+### Success Response
+
+Key | Value Type
+--- | ----
+pdf_ready | boolean
+UID | string
+
+### Errors
+
+
+#### Invalid Partner or API key
+
+Key | Value Type
+--- | ----------
+message | string
+
+
+#### Not Found UID
+
+Key | Value Type | Notes
+--- | ---------- | -----
+field_name | string | Value: "UID"
+message | string | Value: "Registrant not found"
+
+#### Syntax Error
+
+Key | Value Type | Notes
+--- | ---------- | -----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
 
 
 ## stop_reminders
 
-POST /api/v3/registrations/stop_reminders F or a given registration UID sets reminders_left to 0 to prevent further reminder emails.
+### HTTP Request
 
-POST: { partner_id: string (s eries of digits, no specific length), partner_API_key: string , (no specific length),
+`POST /api/v3/registrations/stop_reminders`
 
-UID: string ( no specific length),
+For a given registration `UID` sets `reminders_left` to 0 to prevent further reminder emails.
 
-callback: string ( optional)
 
-}
+Parameter | Type | Notes
+--------- | ---- | -----
+partner_id | string | Required. Series of digits, no specific length.
+partner_API_key | string | Required. No specific length.
+UID | string | Required.
+callback | string | Optional.
 
 ### Success
 
@@ -600,242 +646,315 @@ callback: string ( optional)
 }
 ```
 
-Return 200
-
-Field | Type | Notes
------ | ---- | -----
-UID   | string | No specified length
-first_name | string | 
-last_name | string |
-email_address | string |
-reminders_stopped | boolean | 
+Key | Value Type
+----- | ----
+UID   | string
+first_name | string
+last_name | string
+email_address | string
+reminders_stopped | boolean
 
 ### Errors
 
-All return status code 400
+#### Invalid Partner or API key
 
-Invalid Partner or API key
+Key | Value Type
+--- | ---------
+message | string
 
-{ message: string }
+#### Not Found UID
 
-Not Found UID
+Key | Value Type | Note
+--- | --------- |  ----
+field_name | string | Value: "UID"
+message | string | Value: "Registrant not found"
 
-{ field_name: "UID", message: string ( "Registrant not found" }
+#### Syntax Error
 
-Syntax Error
-
-{
-  field_name: string (name of field that is not defined for this request),
-  message: string (" Invalid parameter type")
-}
-
+Key | Value Type | Note
+--- | --------- |  ----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
 
 
 ## registrations
 
-For a given partner, checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
+For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and returns partner­-specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
 
-GET /api/v3/registrations.json returns registration records associated with the given partner
+### HTTP Request
 
-GET: { partner_id: string (s eries of digits, no specific length), partner_API_key: string, (no specific length),
+`GET /api/v3/registrations.json`
 
-since: string ( optional, UTC datetime format),
+Returns registration records associated with the given partner
 
-email: string ( optional, email name at domain format), callback: string ( optional)
+Parameter | Type | Notes
+--------- | ---- | -----
+partner_id | string | Required, series of digits, no specific length
+partner_API_key | string | Required, no specific length
+since | string | Optional, UTC datetime format
+email | string | Optional, email name at domain format
+callback | string | Optional
 
-}
 
-Invalid Partner or API key: return 400 { message: string }
+### Success Response
 
-Invalid since: return 400
+JSON dictionary with key `registrations` and value is a list of dictionaries with the following key/value pairs:
 
-{ field_name: "since", message: string ( "Invalid parameter value" }
+Required unless specified as optional.
 
-Syntax Error: return 400
+Key | Value Type | Notes
+--- | ---------- | -----
+status | string | "complete", or reason for incomplete
+create_time | string | UTC datetime format
+complete_time | string | UTC datetime format
+lang | locale­compatible string | en/es/fr, etc
+first_reg | boolean
+citizen | boolean
+first_registration | boolean
+home_zip_code | ‘zzzzz’ | 5 digit
+us_citizen | boolean
+name_title | string
+first_name | string
+middle_name | string
+last_name | string
+name_suffix | string
+home_address | string
+home_unit | string
+home_city | string
+home_state_id | string(2)
+has_mailing_address | boolean
+mailing_address | string
+mailing_unit | string
+mailing_city | string
+mailing_state_id | string(2)
+mailing_zip_code | string
+race | string
+party | string
+phone | string | Optional
+phone_type | string | Optional
+email_address | string
+opt_in_email | boolean
+opt_in_sms | boolean
+opt_in_volunteer | boolean
+partner_opt_in_email | boolean
+partner_opt_in_sms | boolean
+partner_opt_in_volunteer | boolean
+survey_question_1 | string
+survey_answer_1 | string
+survey_question_2 | string
+survey_answer_2 | string
+finish_with_state | boolean
+created_via_api | boolean
 
-{ field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }
+### Error Responses
 
-Success: return 200
+#### Invalid Partner or API key
 
-{ registrations:
+Key | Value Type
+--- | ----------
+message | string
 
-[ status: string (complete, or reason for incomplete),
-create_time: string ( UTC datetime format),
-complete_time: string ( UTC datetime format),
-lang: locale­compatible string ( en/es/fr, etc),
-first_reg: boolean,
-citizen: boolean,
-first_registration: boolean,
-home_zip_code: ‘zzzzz’ ( 5 digit),
-us_citizen: boolean,
-name_title: string,
-first_name: string,
-middle_name: string,
-last_name: string,
-name_suffix: string,
-home_address: string,
-home_unit: string,
-home_city: string,
-home_state_id: string(2),
-has_mailing_address: boolean,
-mailing_address: string,
-mailing_unit: string,
-mailing_city: string,
-mailing_state_id: string(2),
-mailing_zip_code: string,
-race: string,
-party: string,
-phone: string | Optional,
-phone_type: string | Optional,
-email_address: string,
-opt_in_email: boolean,
-opt_in_sms: boolean,
-opt_in_volunteer: boolean,
-partner_opt_in_email: boolean,
-partner_opt_in_sms; boolean,
-partner_opt_in_volunteer: boolean,
- survey_question_1: string,
-survey_answer_1: string,
-survey_question_2: string,
-survey_answer_2: string,
-finish_with_state: boolean,
-created_via_api: boolean
-]
+#### Invalid since
 
-}
+Key | Value Type | Note
+--- | ---------- | -----
+field_name | string | Value: "since"
+message | string | Value: "Invalid parameter value"
+
+#### Syntax Error
+
+Key | Value Type | Note
+--- | ---------- | -----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
+
 
 ## gregistrations
 
-For a given gpartner ­­ a government partner such as a local elections office ­­ checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.
+For a given gpartner ­­— a government partner such as a local elections office ­­— checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.
 
 Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those c reated after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
 
-GET /api/v3/gregistrations.json returns registration records associated with the given government partner
+### HTTP Request
 
-GET: { g partner_id: string (s eries of digits, no specific length), gpartner_API_key: string, (no specific length),
+`GET /api/v3/gregistrations.json`
 
-since: string ( optional, UTC datetime format),
+Returns registration records associated with the given government partner
 
-email: string ( optional, email name at domain format), callback: string ( optional)
+Parameter | Type | Notes
+--------- | ---- | ----
+gpartner_id | string | Series of digits, no specific length
+gpartner_API_key | string | No specific length
+since | string | Optional, UTC datetime format
+email | string | Optional, email name at domain format
+callback | string | Optional
 
-}
+### Success Response
 
-Invalid Partner or API key: return 400 { message: string }
+JSON dictionary with key `registrations` and value is a list of dictionaries with the following key/value pairs:
 
-Invalid since: return 400
 
-{ field_name: "since", message: string ( "Invalid parameter value }
+Key | Value Type | Notes
+--- | ---------- | -----
+status | string | "complete", or reason for incomplete
+create_time | string | UTC datetime format
+complete_time | string | UTC datetime format
+lang | locale­ compatible string |  en/es/fr, etc
+first_reg | boolean
+citizen | boolean
+first_registration | boolean
+home_zip_code | string | 5 digits, ‘zzzzz’
+us_citizen | boolean
+name_title | string
+first_name | string
+middle_name | string
+last_name | string
+name_suffix | string
+home_address | string
+home_unit | string
+home_city | string
+home_state_id | string(2)
+has_mailing_address | boolean
+mailing_address | string
+mailing_unit | string
+mailing_city | string
+mailing_state_id | string(2)
+mailing_zip_code | string
+race | string
+party | string
+phone | string | Optional
+phone_type | string | Optional
+email_address | string
+source_tracking_id | string
+partner_tracking_id | string
 
-Syntax Error: return 400
+### Error Responses
 
-{ field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }
+#### Invalid Partner or API key
 
-Success: return 200
+Key | Value Type
+--- | ----------
+message | string
 
-{ registrations:
+#### Invalid since
 
-[ s t a t u s : s t r i n g (  c o m p l e t e , o r r e a s o n f o r i n c o m p l e t e ) ,   create_time: string ( UTC datetime format), complete_time: string ( UTC datetime format),
+Key | Value Type | Notes
+--- | ---------- | ------
+field_name | string | Value: "since"
+message | string | Value: "Invalid parameter value"
 
-lang: locale­compatible string ( en/es/fr, etc), first_reg: boolean,
+#### Syntax Error
 
-citizen: boolean,
+Key | Value Type | Notes
+--- | ---------- | -----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
 
-first_registration: boolean, home_zip_code: ‘zzzzz’ ( 5 digit), us_citizen: boolean,
-
-name_title: string,
-
-first_name: string, middle_name: string, last_name: string,
-
-name_suffix: string, home_address: string, home_unit: string,
-
-home_city: string, home_state_id: string(2), has_mailing_address: boolean, mailing_address: string, mailing_unit: string, mailing_city: string, mailing_state_id: string(2), mailing_zip_code: string,
-
-race: string,
-
-party: string,
-
-phone: string | Optional,
-phone_type: string | Optional. email_address: string, source_tracking_id: string, partner_tracking_id: string ]
-
-}
 
 ## partners
 
 Creates a new partner, very similar to partner creation in the Web UI of the partner portal.
 
-POST /api/v3/partners.json
+### HTTP Request
 
-POST { partner: { org_name: string,
-org_URL: string (URL format),
-org_privacy_url: string  | Optional,
-,contact_name: string,
-contact_email: string ( email address format),
-contact_phone: string  (nnn­nnn­nnnn format),
-contact_address: string,
-contact_city: string,
-contact_state: string ( 2 letter state code),
-contact_ZIP: ( nnnnn format)
-logo_image_URL: string (URL format),
-survey_question_1_[locale]: string, (where [locale] may be any of the enabled locale codes)
-survey_question_2_[locale]: string, (where [locale] may be any of the enabled locale codes)
-partner_ask_volunteer: boolean
-} }
+`POST /api/v3/partners.json`
 
-Syntax Error: return 400
+Post JSON dictionary of fields nested under `partner`
 
-{ field_name: string (name of field that is not defined for this request),  message: string (" Invalid parameter type") }
+Parameter | Type | Notes
+--------- | ---- | -----
+org_name | string
+org_URL | string | URL format
+org_privacy_url | string  | Optional
+contact_name | string
+contact_email | string | Email address format
+contact_phone | string | 'nnn­nnn­nnnn' format
+contact_address | string
+contact_city | string
+contact_state | string |  2 letter state code)
+contact_ZIP | string | 5 digits, 'nnnnn'
+logo_image_URL | string | URL format)
+survey_question_1_[locale] | string | Where [locale] may be any of the enabled locale codes
+survey_question_2_[locale] | string | Where [locale] may be any of the enabled locale codes
+partner_ask_volunteer | boolean
 
-Success: return 200
+### Success Response
 
-{ partner_id: string (s eries of digits) } partner
+Key | Value Type | Notes
+--- | ---------- | -----
+partner_id | string | Series of digits
+
+### Error Responses
+
+#### Syntax Error
+
+Key | Value Type | Notes
+--- | ---------- | -----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
+
+### partner
 
 For a given partner, checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific profile records. Partner profile was created using Rocky web UI or API call POST partners. The callback parameter is an optional string parameter, exactly as described above.
 
-GET /api/v3/partners/[partner_id].json
+### HTTP Request
 
-GET: { partner_API_key: string,  (no specific length),
+`GET /api/v3/partners/[partner_id].json`
 
-callback: string ( optional) }
+Parameter | Type | Notes
+--------- | ---- | -----
+partner_id | string | Required. Series of digits, no specific length.
+callback | string | Optional.
 
- Invalid Partner or API key: return 400 { message: string }
+### Success Response
 
-Success: return 200 {
+Key | Value Type | Notes
+--- | ---------- | -----
+org_name | string
+org_URL | string | URL format
+org_privacy_url | string | URL format
+contact_name | string
+contact_email | string | Email address format
+contact_phone | string  | nnn­nnn­nnnn format
+contact_address | string
+contact_city | string
+contact_state | string |  2 letter state code
+contact_ZIP | string | nnnnn format
+logo_image_URL | string | URL format
+application_css_URL | string | URL format
+registration_css_URL | string | URL format
+parnter_css_URL | string | URL format
+finish_iframe_url | string | URL format
+survey_question_1_[locale] | string | Where [locale] may be any enabled locale
+survey_question_2_[locale] | string | Where [locale] may be any enabled locale
+whitelabeled | boolean
+rtv_email_opt_in | boolean
+partner_email_opt_in | boolean
+rtv_sms_opt_in | boolean
+partner_sms_opt_in | boolean
+rtv_ask_email_opt_in | boolean
+partner_ask_email_opt_in | boolean
+rtv_ask_sms_opt_in | boolean
+partner_ask_sms_opt_in | boolean
+ask_for_volunteers | boolean
+partner_ask_for_volunteers | boolean
+external_tracking_snippet | string
+registration_instructions_url | string | URL format
+application_css_present | boolean
+application_css_url | string | URL format
+registration_css_present | boolean
+registration_css_url | string | URL format
+partner_css_present | boolean
+partner_css_url | string | URL format
+primary | boolean
 
-org_name: string
-org_URL: string (URL format), org_privacy_url: string (URL format), contact_name: string,
-contact_email: string ( email address format),
-contact_phone: string  (nnn­nnn­nnnn format),
-contact_address: string,
-contact_city: string,
-contact_state: string ( 2 letter state code),
-contact_ZIP: ( nnnnn format),
-logo_image_URL: string (URL format),
-application_css_URL: string (URL format),
-registration_css_URL: string (URL format),
-parnter_css_URL: string (URL format),
-finish_iframe_url: string (URL format),
-`survey_question_1_<loc>`: string (where `loc` may be any enabled locale),
-`survey_question_2_<loc>`: string (where `loc` may be any enabled locale),
-whitelabeled: boolean,
-rtv_email_opt_in: boolean,
-partner_email_opt_in: boolean,
-rtv_sms_opt_in: bollean,
-partner_sms_opt_in: boolean,
-rtv_ask_email_opt_in: boolean,
-partner_ask_email_opt_in: boolean,
-rtv_ask_sms_opt_in: bollean,
-partner_ask_sms_opt_in: boolean,
-ask_for_volunteers: boolean,
-partner_ask_for_volunteers: boolean,
-external_tracking_snippet: string,
-registration_instructions_url: string (URL format),
-application_css_present: boolean,
-application_css_url: string (URL format) registration_css_present: boolean,
-registration_css_url: string (URL format),
-partner_css_present: boolean,
-partner_css_url:string (URL format),
-primary: boolean
-}
+### Error Response
+
+#### Invalid Partner or API key
+
+Key | Value Type
+--- | ----------
+message | string
 
 ## partner
 
@@ -845,54 +964,67 @@ Partner profile was created using Rocky web UI or API call POST partners. The ca
 
 In addition to the return field names above, there are return fields that are aliases for the above, provided for internal use with Rocky. Though present in return data, the alias fields can be ignored by most callers. They are:
 
-* organization = org_name
-* url = org_URL
-* privacy_url = org_privacy_url
-* name = contact_name
-* email = contact_email
-* phone = contact_phone
-* address = contact_address
-* city = contact_city
-* state_abbrev = contact_state
-* zip_code = contact_ZIP
-* rtv_email_opt_in = rtv_ask_email_opt_in
-* partner_email_opt_in = partner_ask_email_opt_in
-* rtv_sms_opt_in = rtv_ask_email_opt_in
-* partner_sms_opt_in = partner_ask_sms_opt_in
+Field | Alias
+----- | -----
+organization | org_name
+url | org_URL
+privacy_url | org_privacy_url
+name | contact_name
+email | contact_email
+phone | contact_phone
+address | contact_address
+city | contact_city
+state_abbrev | contact_state
+zip_code | contact_ZIP
+rtv_email_opt_in | rtv_ask_email_opt_in
+partner_email_opt_in | partner_ask_email_opt_in
+rtv_sms_opt_in | rtv_ask_email_opt_in
+partner_sms_opt_in | partner_ask_sms_opt_in
 
-GET /api/v3/partnerpublicprofiles/[partner_id].json
+### HTTP Request
 
-GET: { partner_id: string (s eries of digits),
+`GET /api/v3/partnerpublicprofiles/[partner_id].json`
 
-callback: string ( optional) }
+Parameter | Type | Notes
+--------- | ---- | -----
+partner_id | string | Required. Series of digits, no specific length.
+callback | string | Optional.
 
-Invalid Partner or API key: return 400 { message: string }
+### Success Response
 
-Success: return 200
-
-{
-org_name: string (URL format),
-org_URL: string,
-org_privacy_url: string,
-logo_image_URL:string  (URL format ),
-survey_question_1: {hash},
-survey_question_2: {hash},
-whitelabeled: boolean,
-rtv_ask_email_opt_in: boolean,
-partner_ask_email_opt_in: boolean,
-rtv_ask_sms_opt_in: bollean,
-partner_ask_sms_opt_in: boolean,
-rtv_ask_volunteer: boolean,
-partner_ask_volunteer: boolean
-}
+Key | Value Type | Notes
+--- | ---------- | -----
+org_name | string | URL format
+org_URL | string
+org_privacy_url | string
+logo_image_URL | string | URL format
+survey_question_1 | {hash}
+survey_question_2 | {hash}
+whitelabeled | boolean
+rtv_ask_email_opt_in | boolean
+partner_ask_email_opt_in | boolean
+rtv_ask_sms_opt_in | boolean
+partner_ask_sms_opt_in | boolean
+rtv_ask_volunteer | boolean
+partner_ask_volunteer | boolean
 
 In addition to the return field names above, there are return fields that are aliases for the above, provided for internal use with Rocky. Though present in return data, the alias fields can be ignored by most callers. They are:
 
-* organization = org_name
-* url = org_URL
-* privacy_url = org_privacy_url
-* rtv_email_opt_in = rtv_ask_email_opt_in
-* partner_email_opt_in = partner_ask_email_opt_in
-* rtv_sms_opt_in = rtv_ask_email_opt_in
-* partner_sms_opt_in = partner_ask_sms_opt_in
+Field | Alias
+----- | -----
+organization | org_name
+url | org_URL
+privacy_url | org_privacy_url
+rtv_email_opt_in | rtv_ask_email_opt_in
+partner_email_opt_in | partner_ask_email_opt_in
+rtv_sms_opt_in | rtv_ask_email_opt_in
+partner_sms_opt_in | partner_ask_sms_opt_in
+
+### Error Response
+
+#### Invalid Partner or API key
+
+Key | Value Type
+--- | ----------
+message | string
 
