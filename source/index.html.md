@@ -8,10 +8,6 @@ toc_footers:
 search: true
 ---
 
-<aside class="notice">
-This is unofficially maintained API documentation derived from the PDF docs provided by Rock the Vote.
-</aside>
-
 # Overview
 
 Rocky is web application that provides a web user interface that U.S. citizens can use for assistance in preparing a voter registration application document that is complete and correct for all Federal and state­ specific requirements, and therefore should be accepted in most cases by the election officials to whom the user submits the completed, printed, signed form.
