@@ -1391,7 +1391,7 @@
 
 <p><code class="prettyprint">GET /api/v3/registrations.json</code></p>
 
-<p>Returns registration records associated with the given partner</p>
+<p>Returns registration records associated with the given partner. (For large sets of data, please use a combination of 'since' and 'before' in your call: api/v3/registrations.json?partner_API_key=whatever&partner_id=1234&since=2018-07-03T01:59:59&before=2018-07-04T21:59:59)</p>
 
 <table><thead>
 <tr>
@@ -1412,6 +1412,11 @@
 </tr>
 <tr>
 <td>since</td>
+<td>string</td>
+<td>Optional, UTC datetime format</td>
+</tr>
+<tr>
+<td>before</td>
 <td>string</td>
 <td>Optional, UTC datetime format</td>
 </tr>
