@@ -688,6 +688,7 @@ Parameter | Type | Notes
 partner_id | string | Required, series of digits, no specific length
 partner_API_key | string | Required, no specific length
 since | string | Optional, UTC datetime format
+before | string | Optional, UTC datetime format
 email | string | Optional, email name at domain format
 callback | string | Optional
 
