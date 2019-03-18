@@ -180,7 +180,7 @@ mailing_zip_code | string  | Req if `has_mailing_address`
 race | string | Required/optional is state­ specific| Value must be one of "American Indian / Alaskan Native", "Asian / Pacific Islander", "Black (not Hispanic)", "Hispanic", "Multi­racial", "White (not Hispanic)", "Other", "Decline to State", "Indio Americano / Nativo de Alaska", "Asiatico / Islas del Pacifico", "Negra (no Hispano)", "Hispano", "Blanca (no Hispano)", "Otra", "Declino comentar"
 party | string | Optional. No validation because allowable choices are state specific
 phone | string | Optional
-phone_type | string | Optional. Must be one of "Mobile", "Home", "Work", "Other", "Movil", "Casa", "Trabajo", "Otro"
+phone_type | string | Required if a phone number is provided. Must be one of "Mobile", "Home", "Work", "Other", "Movil", "Casa", "Trabajo", "Otro"
 change_of_name | boolean | Required
 prev_name_title | string | Optional |
 prev_first_name | string | Optional |
