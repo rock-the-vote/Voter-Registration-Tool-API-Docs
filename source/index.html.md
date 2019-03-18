@@ -728,7 +728,7 @@ mailing_zip_code | string
 race | string
 party | string
 phone | string | Optional
-phone_type | string | Optional
+phone_type | string | Required if phone provided
 email_address | string
 opt_in_email | boolean
 opt_in_sms | boolean
@@ -820,7 +820,7 @@ mailing_zip_code | string
 race | string
 party | string
 phone | string | Optional
-phone_type | string | Optional
+phone_type | string | Required if phone provided
 email_address | string
 source_tracking_id | string
 partner_tracking_id | string
