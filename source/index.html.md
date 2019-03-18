@@ -115,7 +115,7 @@ Other Notes
     "send_confirmation_reminder_emails": true,
     "created_at": "01102016 11:22:33",
     "updated_at": "01102016 12:23:56",
-    "date_of_birth": "01011990",
+    "date_of_birth": "01-01-1990",
     "id_number": "1234",
     "email_address": "me@me.com",
     "first_registration": true,
@@ -154,7 +154,7 @@ short_form | boolean | Optional. Default false
 state_ovr_data | string | Optional. Hash, only used for stats and in cases where registrant went through finish­ with­ state steps but ended up finishing with rock the vote)
 created_at | datetime | Required. ‘mm­dd­yyyy hh:mm:ss’ (for statistics)
 updated_at | datetime | Required.  ‘mm­dd­yyyy hh:mm:ss’ (for statistics)
-date_of_birth | date | Required. ‘mm­dd­yyyy’
+date_of_birth | date | Required. ‘mm-dd-yyyy’
 id_number | string | Required. Series of alnum, length and format state specific
 email_address | string | Required. RFC syntax
 first_registration | boolean | Required |
@@ -297,7 +297,7 @@ Body is JSON list of `registration` dictionaries combining [bulk](#bulk-registra
       "send_confirmation_reminder_emails": true,
       "created_at": "01102016 11:22:33",
       "updated_at": "01102016 12:23:56",
-      "date_of_birth": "01011990",
+      "date_of_birth": "01-01-1990",
       "id_number": "1234",
       "email_address": "me@me.com",
       "first_registration": true,
@@ -372,7 +372,7 @@ Differs from registrations only in the following ways:
     "lang": "en",
     "partner_id": "123456789",
     "send_confirmation_reminder_emails": true,
-    "date_of_birth": "01011990",
+    "date_of_birth": "01-01-1990",
     "email_address": "me@me.com",
     "home_zip_code": "01234",
     "us_citizen": true,
@@ -500,7 +500,7 @@ Parameter | Type | Notes
 lang | string | Required. Locale­ compatible string (en/es, etc)
 home_state_id | string | Required. 2-character state abbreviation
 home_zip_code | string | Required. ‘zzzzz’ 5 digit zip code
-date_of_birth | string | Optional. ‘mm­dd­yyyy’
+date_of_birth | string | Optional. ‘mm-dd-yyyy’
 callback | string | Optional.
 
 ### Success response
