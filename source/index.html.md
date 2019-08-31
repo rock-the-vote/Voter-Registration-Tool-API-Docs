@@ -28,6 +28,8 @@ Finally, the API includes the "partner_registrations" interface to obtain record
 
 ## V4
 
+The registration submission endpoint (/api/v4/registrations and /api/v4/gregistrations) will now return a validation error if the email address submitted is in our block list.
+
 ### Removed 
 
 * `GET /api/v4/registrations`  
