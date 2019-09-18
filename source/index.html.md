@@ -372,7 +372,7 @@ Differs from registrations only in the following ways:
 
 * Only the following parameters are required
   * lang
-  * partner_id
+  * gpartner_id
   * send_confirmation_reminder_emails
   * date_of_birth
   * email_address
@@ -391,7 +391,7 @@ Differs from registrations only in the following ways:
 {
   "registration": {
     "lang": "en",
-    "partner_id": "123456789",
+    "gpartner_id": "123456789",
     "send_confirmation_reminder_emails": true,
     "date_of_birth": "01-01-1990",
     "email_address": "me@me.com",
@@ -837,7 +837,7 @@ message | string | Value: "Invalid parameter type"
 
 ## report status
 
-For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and returns status of previously queued report.
+For a given partner, checks `gpartner_id` (ID in the "partners" table) and corresponding API key, and returns status of previously queued report.
 
 ### HTTP Request
 
@@ -847,8 +847,8 @@ Returns report record with ID and URL for checking report status
 
 Parameter | Type | Notes
 --------- | ---- | -----
-partner_id | string | Required, series of digits, no specific length
-partner_API_key | string | Required, no specific length
+gpartner_id | string | Required, series of digits, no specific length
+gpartner_API_key | string | Required, no specific length
 callback | string | Optional
 
 
