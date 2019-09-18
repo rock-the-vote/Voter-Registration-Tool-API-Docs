@@ -26,6 +26,27 @@ Finally, the API includes the "partner_registrations" interface to obtain record
 
 # Release Notes
 
+## V4
+
+The registration submission endpoint (/api/v4/registrations and /api/v4/gregistrations) will now return a validation error if the email address submitted is in our block list.
+
+### Removed 
+
+* `GET /api/v4/registrations`  
+* `GET /api/v4/gregistrations`
+
+We will also depreacte old versions (v1, v2, v3) of these APIs shortly and return only an error message.
+
+### Added
+
+* `POST /api/v4/registrant_reports` - create report
+* `GET /api/v4/registrant_reports/<ID>` - check the status of a particular report and get the download URL
+* `GET /api/v4/registrant_reports/<ID>/download` - download the contents of a registrant report in CSV format
+
+* `POST /api/v4/gregistrant_reports` - create report
+* `GET /api/v4/gregistrant_reports/<ID>` - check the status of a particular report and get the download URL
+* `GET /api/v4/gregistrant_reports/<ID>/download` - download the contents of a registrant report in CSV format
+
 ## V3
 
 Added these interfaces:
@@ -209,7 +230,7 @@ async | boolean | Optional. Default is "true"
 
 ### HTTP Request
 
-`POST /api/v3/registrations.json`
+`POST /api/v4/registrations.json`
 
 Post JSON dictionary of fields nested under `registration`
 
@@ -274,7 +295,7 @@ finish_with_state | boolean  | Whether the user is in a "finish_with_state" flow
 
 ### HTTP Request
 
-`POST /api/v3/registrations/bulk`
+`POST /api/v4/registrations/bulk`
 
 Body is JSON list of `registration` dictionaries combining [bulk](#bulk-registration-fields) and [normal](#registration-fields) registration fields
 
@@ -382,7 +403,7 @@ Differs from registrations only in the following ways:
 }
 ```
 
-`POST /api/v3/gregistrations.json`
+`POST /api/v4/gregistrations.json`
 
 Post a JSON object with key `registration` and value of a registration object
 
@@ -416,7 +437,7 @@ updated_at | string | UTC datetime format
 
 ### HTTP Request
 
-`POST /api/v3/bulk_gregistrations.json`
+`POST /api/v4/bulk_gregistrations.json`
 
 Body is JSON dictionary with a single key, `bulk_gregistrations`, and value as a list of bulk registration dictionaries, as described above.
 
@@ -452,7 +473,7 @@ Returns a list of state for which Rocky current supports per­-state integration
 
 ### HTTP Request
 
-`GET /api/v3/gregistrationstates.json`
+`GET /api/v4/gregistrationstates.json`
 
 ### Response
 
@@ -493,7 +514,7 @@ Most input fields are personal information; most output fields are indicated as 
 
 ### HTTP Request
 
-`GET /api/v3/state_requirements.json`
+`GET /api/v4/state_requirements.json`
 
 Parameter | Type | Notes
 --------- | ---- | -----
@@ -573,7 +594,7 @@ For a given registration UID, returns true or false to indicate whether the PDF 
 
 ### HTTP Request
 
-`GET /api/v3/registrations/pdf_read`
+`GET /api/v4/registrations/pdf_read`
 
 Returns status of PDF generation for the given registrant
 
@@ -618,7 +639,7 @@ message | string | Value: "Invalid parameter type"
 
 ### HTTP Request
 
-`POST /api/v3/registrations/stop_reminders`
+`POST /api/v4/registrations/stop_reminders`
 
 For a given registration `UID` sets `reminders_left` to 0 to prevent further reminder emails.
 
@@ -673,15 +694,15 @@ field_name | string | Name of field that is not defined for this request
 message | string | Value: "Invalid parameter type"
 
 
-## registrations
+## reports
 
-For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and returns partner­-specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
+For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and starts generation of partner­-specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
 
 ### HTTP Request
 
-`GET /api/v3/registrations.json`
+`POST /api/v4/registrant_reports.json`
 
-Returns registration records associated with the given partner
+Returns report record with ID and URL for checking report status
 
 Parameter | Type | Notes
 --------- | ---- | -----
@@ -695,53 +716,49 @@ callback | string | Optional
 
 ### Success Response
 
-JSON dictionary with key `registrations` and value is a list of dictionaries with the following key/value pairs:
+JSON dictionary with details about the report generation
 
-Required unless specified as optional.
 
 Key | Value Type | Notes
 --- | ---------- | -----
-status | string | "complete", or reason for incomplete
-create_time | string | UTC datetime format
-complete_time | string | UTC datetime format
-lang | locale­compatible string | en/es/fr, etc
-first_reg | boolean
-citizen | boolean
-first_registration | boolean
-home_zip_code | ‘zzzzz’ | 5 digit
-us_citizen | boolean
-name_title | string
-first_name | string
-middle_name | string
-last_name | string
-name_suffix | string
-home_address | string
-home_unit | string
-home_city | string
-home_state_id | string(2)
-has_mailing_address | boolean
-mailing_address | string
-mailing_unit | string
-mailing_city | string
-mailing_state_id | string(2)
-mailing_zip_code | string
-race | string
-party | string
-phone | string | Optional
-phone_type | string | Required if phone provided
-email_address | string
-opt_in_email | boolean
-opt_in_sms | boolean
-opt_in_volunteer | boolean
-partner_opt_in_email | boolean
-partner_opt_in_sms | boolean
-partner_opt_in_volunteer | boolean
-survey_question_1 | string
-survey_answer_1 | string
-survey_question_2 | string
-survey_answer_2 | string
-finish_with_state | boolean
-created_via_api | boolean
+status | string | "queued", or other current report status
+report_id | integer | e.g. 17
+record_count | integer | e.g. 2314 total number of records being generated by this report
+current_index | integer | e.g. 100 current index of being processed by the report
+status_url | string | e.g. "https://register.rockthevote.com/api/v4/registrant_reports/17"
+download_url | string | may be empty if not complete
+
+## report status
+
+For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and returns status of previously queued report.
+
+### HTTP Request
+
+`GET /api/v4/registrant_reports/<ID>.json`
+
+Returns report record with ID and URL for checking report status
+
+Parameter | Type | Notes
+--------- | ---- | -----
+partner_id | string | Required, series of digits, no specific length
+partner_API_key | string | Required, no specific length
+callback | string | Optional
+
+
+### Success Response
+
+JSON dictionary with details about the report generation
+
+
+Key | Value Type | Notes
+--- | ---------- | -----
+status | string | "queued", or other current report status
+report_id | integer | e.g. 17
+record_count | integer | e.g. 2314 total number of records being generated by this report
+current_index | integer | e.g. 100 current index of being processed by the report
+status_url | string | e.g. "https://register.rockthevote.com/api/v4/registrant_reports/17"
+download_url | string | may be empty if not complete. e.g. "https://register.rockthevote.com/api/v4/registrant_reports/17/download"
+
 
 ### Error Responses
 
@@ -751,13 +768,6 @@ Key | Value Type
 --- | ----------
 message | string
 
-#### Invalid since
-
-Key | Value Type | Note
---- | ---------- | -----
-field_name | string | Value: "since"
-message | string | Value: "Invalid parameter value"
-
 #### Syntax Error
 
 Key | Value Type | Note
@@ -766,15 +776,18 @@ field_name | string | Name of field that is not defined for this request
 message | string | Value: "Invalid parameter type"
 
 
-## gregistrations
 
-For a given gpartner ­­— a government partner such as a local elections office ­­— checks partner_id (ID in the "partners" table) and corresponding API key, and returns partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.
+
+
+## gregistrant_reports
+
+For a given gpartner ­­— a government partner such as a local elections office ­­— checks partner_id (ID in the "partners" table) and corresponding API key, and initializes a report generation of partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.
 
 Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those c reated after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
 
 ### HTTP Request
 
-`GET /api/v3/gregistrations.json`
+`POST /api/v4/gregistrant_reports.json`
 
 Returns registration records associated with the given government partner
 
@@ -788,42 +801,17 @@ callback | string | Optional
 
 ### Success Response
 
-JSON dictionary with key `registrations` and value is a list of dictionaries with the following key/value pairs:
+JSON dictionary with details about the report generation
 
 
 Key | Value Type | Notes
 --- | ---------- | -----
-status | string | "complete", or reason for incomplete
-create_time | string | UTC datetime format
-complete_time | string | UTC datetime format
-lang | locale­ compatible string |  en/es/fr, etc
-first_reg | boolean
-citizen | boolean
-first_registration | boolean
-home_zip_code | string | 5 digits, ‘zzzzz’
-us_citizen | boolean
-name_title | string
-first_name | string
-middle_name | string
-last_name | string
-name_suffix | string
-home_address | string
-home_unit | string
-home_city | string
-home_state_id | string(2)
-has_mailing_address | boolean
-mailing_address | string
-mailing_unit | string
-mailing_city | string
-mailing_state_id | string(2)
-mailing_zip_code | string
-race | string
-party | string
-phone | string | Optional
-phone_type | string | Required if phone provided
-email_address | string
-source_tracking_id | string
-partner_tracking_id | string
+status | string | "queued", or other current report status
+report_id | integer | e.g. 17
+record_count | integer | e.g. 2314 total number of records being generated by this report
+current_index | integer | e.g. 100 current index of being processed by the report
+status_url | string | e.g. "https://register.rockthevote.com/api/v4/gregistrant_reports/17"
+download_url | string | may be empty if not complete. e.g. "https://register.rockthevote.com/api/v4/gregistrant_reports/17/download"
 
 ### Error Responses
 
@@ -847,6 +835,55 @@ Key | Value Type | Notes
 field_name | string | Name of field that is not defined for this request
 message | string | Value: "Invalid parameter type"
 
+## report status
+
+For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and returns status of previously queued report.
+
+### HTTP Request
+
+`GET /api/v4/gregistrant_reports/<ID>.json`
+
+Returns report record with ID and URL for checking report status
+
+Parameter | Type | Notes
+--------- | ---- | -----
+partner_id | string | Required, series of digits, no specific length
+partner_API_key | string | Required, no specific length
+callback | string | Optional
+
+
+### Success Response
+
+JSON dictionary with details about the report generation
+
+
+Key | Value Type | Notes
+--- | ---------- | -----
+status | string | "queued", or other current report status
+report_id | integer | e.g. 17
+record_count | integer | e.g. 2314 total number of records being generated by this report
+current_index | integer | e.g. 100 current index of being processed by the report
+status_url | string | e.g. "https://register.rockthevote.com/api/v4/gregistrant_reports/17"
+download_url | string | may be empty if not complete. e.g. "https://register.rockthevote.com/api/v4/gregistrant_reports/17/download"
+
+
+### Error Responses
+
+#### Invalid Partner or API key
+
+Key | Value Type
+--- | ----------
+message | string
+
+#### Syntax Error
+
+Key | Value Type | Note
+--- | ---------- | -----
+field_name | string | Name of field that is not defined for this request
+message | string | Value: "Invalid parameter type"
+
+
+
 
 ## partners
 
@@ -854,7 +891,7 @@ Creates a new partner, very similar to partner creation in the Web UI of the par
 
 ### HTTP Request
 
-`POST /api/v3/partners.json`
+`POST /api/v4/partners.json`
 
 Post JSON dictionary of fields nested under `partner`
 
@@ -896,7 +933,7 @@ For a given partner, checks partner_id (ID in the "partners" table) and correspo
 
 ### HTTP Request
 
-`GET /api/v3/partners/[partner_id].json`
+`GET /api/v4/partners/[partner_id].json`
 
 Parameter | Type | Notes
 --------- | ---- | -----
@@ -980,7 +1017,7 @@ partner_sms_opt_in | partner_ask_sms_opt_in
 
 ### HTTP Request
 
-`GET /api/v3/partnerpublicprofiles/[partner_id].json`
+`GET /api/v4/partnerpublicprofiles/[partner_id].json`
 
 Parameter | Type | Notes
 --------- | ---- | -----
