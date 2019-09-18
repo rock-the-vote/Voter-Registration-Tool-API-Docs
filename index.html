@@ -134,7 +134,32 @@
 <p>Finally, the API includes the &ldquo;partner_registrations&rdquo; interface to obtain records of past registration transactions. Like the similar UI in the Rocky Partner Portal, access requires authentication, and the records returned are only those pertinent to the authenticated entity.</p>
 
 <h1 id="release-notes">Release Notes</h1>
+        
+<h2 id="v4">V4</h2>
 
+<p>The registration submission endpoint (/api/v4/registrations and /api/v4/gregistrations) will now return a validation error if the email address submitted is in our block list.</p>
+
+<p>Removed</p>
+
+<ul>
+<li><code class="prettyprint">GET /api/v4/registrations</code></li>
+<li><code class="prettyprint">GET /api/v4/gregistrations</code></li>
+</ul>
+
+<p>We will also deprecate old versions (v1, v2, v3) of these APIs shortly and return only an error message.</p>
+
+  <p>Added</p>
+<ul>
+<li><code class="prettyprint">POST /api/v4/registrant_reports` - create report</code></li>
+<li><code class="prettyprint">GET /api/v4/registrant_reports/<ID>` - check the status of a particular report and get the download URL</code></li>
+<li><code class="prettyprint">GET /api/v4/registrant_reports/<ID>/download` - download the contents of a registrant report in CSV format</code></li>
+  </ul>
+  <ul>
+<li><code class="prettyprint">POST /api/v4/gregistrant_reports` - create report</code></li>
+<li><code class="prettyprint">GET /api/v4/gregistrant_reports/<ID>` - check the status of a particular report and get the download URL</code></li>
+<li><code class="prettyprint">GET /api/v4/gregistrant_reports/<ID>/download` - download the contents of a registrant report in CSV format</code></li>
+  </ul>
+  
 <h2 id="v3">V3</h2>
 
 <p>Added these interfaces:</p>
@@ -592,7 +617,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST /api/v3/registrations.json</code></p>
+<p><code class="prettyprint">POST /api/v4/registrations.json</code></p>
 
 <p>Post JSON dictionary of fields nested under <code class="prettyprint">registration</code></p>
 
@@ -760,7 +785,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST /api/v3/registrations/bulk</code></p>
+<p><code class="prettyprint">POST /api/v4/registrations/bulk</code></p>
 
 <p>Body is JSON list of <code class="prettyprint">registration</code> dictionaries combining <a href="#bulk-registration-fields">bulk</a> and <a href="#registration-fields">normal</a> registration fields</p>
 
@@ -836,7 +861,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST /api/v3/gregistrations.json</code></p>
+<p><code class="prettyprint">POST /api/v4/gregistrations.json</code></p>
 
 <p>Post a JSON object with key <code class="prettyprint">registration</code> and value of a registration object</p>
 
@@ -896,7 +921,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST /api/v3/bulk_gregistrations.json</code></p>
+<p><code class="prettyprint">POST /api/v4/bulk_gregistrations.json</code></p>
 
 <p>Body is JSON dictionary with a single key, <code class="prettyprint">bulk_gregistrations</code>, and value as a list of bulk registration dictionaries, as described above.</p>
 
@@ -914,7 +939,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET /api/v3/gregistrationstates.json</code></p>
+<p><code class="prettyprint">GET /api/v4/gregistrationstates.json</code></p>
 
 <h3 id="response">Response</h3>
 
@@ -940,7 +965,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET /api/v3/state_requirements.json</code></p>
+<p><code class="prettyprint">GET /api/v4/state_requirements.json</code></p>
 
 <table><thead>
 <tr>
@@ -1159,7 +1184,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET /api/v3/registrations/pdf_read</code></p>
+<p><code class="prettyprint">GET /api/v4/registrations/pdf_read</code></p>
 
 <p>Returns status of PDF generation for the given registrant</p>
 
@@ -1262,7 +1287,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">POST /api/v3/registrations/stop_reminders</code></p>
+<p><code class="prettyprint">POST /api/v4/registrations/stop_reminders</code></p>
 
 <p>For a given registration <code class="prettyprint">UID</code> sets <code class="prettyprint">reminders_left</code> to 0 to prevent further reminder emails.</p>
 
@@ -1383,23 +1408,21 @@
 </tr>
 </tbody></table>
 
-<h2 id="registrations">registrations</h2>
-
-<p>For a given partner, checks <code class="prettyprint">partner_id</code> (ID in the &ldquo;partners&rdquo; table) and corresponding API key, and returns partner­-specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional &ldquo;email&rdquo; parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional &ldquo;since&rdquo; parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the &ldquo;status&rdquo; out parameter. The callback parameter is an optional string parameter, exactly as described above.</p>
-
+<!--new reporting-->
+<h2 id="reports">reports</h2>
+<P>For a given partner, checks partner_id (ID in the "partners" table) and corresponding API key, and starts generation of partner­-specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.</p>
 <h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET /api/v3/registrations.json</code></p>
-
-<p>Returns registration records associated with the given partner. (For large sets of data, please use a combination of 'since' and 'before' in your call: api/v3/registrations.json?partner_API_key=whatever&partner_id=1234&since=2018-07-03T01:59:59&before=2018-07-04T21:59:59)</p>
-
-<table><thead>
+<p><code class="prettyprint">POST /api/v4/registrant_reports.json</code></p>
+<p>Returns report record with ID and URL for checking report status</p>
+<table>
+<thead>
 <tr>
 <th>Parameter</th>
 <th>Type</th>
 <th>Notes</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>partner_id</td>
 <td>string</td>
@@ -1430,274 +1453,159 @@
 <td>string</td>
 <td>Optional</td>
 </tr>
-</tbody></table>
-
+</tbody>
+</table>
+        
 <h3 id="success-response">Success Response</h3>
-
-<p>JSON dictionary with key <code class="prettyprint">registrations</code> and value is a list of dictionaries with the following key/value pairs:</p>
-
-<p>Required unless specified as optional.</p>
-
-<table><thead>
+        
+<p>JSON dictionary with details about the report generation</p>
+        
+<table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 <th>Notes</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>status</td>
 <td>string</td>
-<td>&ldquo;complete&rdquo;, or reason for incomplete</td>
+<td>"queued", or other current report status</td>
 </tr>
 <tr>
-<td>create_time</td>
+<td>report_id</td>
+<td>integer</td>
+<td>e.g. 17</td>
+</tr>
+<tr>
+<td>record_count</td>
+<td>integer</td>
+<td>e.g. 2314 total number of records being generated by this report</td>
+</tr>
+<tr>
+<td>current_index</td>
+<td>integer</td>
+<td>e.g. 100 current index of being processed by the report</td>
+</tr>
+<tr>
+<td>status_url</td>
 <td>string</td>
-<td>UTC datetime format</td>
+<td>e.g. "<a href="https://register.rockthevote.com/api/v4/registrant_reports/17" rel="nofollow">https://register.rockthevote.com/api/v4/registrant_reports/17</a>"</td>
 </tr>
 <tr>
-<td>complete_time</td>
+<td>download_url</td>
 <td>string</td>
-<td>UTC datetime format</td>
+<td>may be empty if not complete</td>
 </tr>
+</tbody>
+</table>
+        
+<h2 id="report_status">report status</h2>
+<p>For a given partner, checks <code>partner_id</code> (ID in the "partners" table) and corresponding API key, and returns status of previously queued report.</p>
+<h3 id="http-request">HTTP Request</h3>
+<p><code class="prettyprint">GET /api/v4/registrant_reports/<ID>.json</code></p>
+<p>Returns report record with ID and URL for checking report status</p>
+<table>
+<thead>
 <tr>
-<td>lang</td>
-<td>locale­compatible string</td>
-<td>en/es/fr, etc</td>
+<th>Parameter</th>
+<th>Type</th>
+<th>Notes</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<td>first_reg</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>citizen</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>first_registration</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>home_zip_code</td>
-<td>‘zzzzz’</td>
-<td>5 digit</td>
-</tr>
-<tr>
-<td>us_citizen</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>name_title</td>
+<td>partner_id</td>
 <td>string</td>
-<td></td>
+<td>Required, series of digits, no specific length</td>
 </tr>
 <tr>
-<td>first_name</td>
+<td>partner_API_key</td>
 <td>string</td>
-<td></td>
+<td>Required, no specific length</td>
 </tr>
 <tr>
-<td>middle_name</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>last_name</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>name_suffix</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_address</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_unit</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_city</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_state_id</td>
-<td>string(2)</td>
-<td></td>
-</tr>
-<tr>
-<td>has_mailing_address</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_address</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_unit</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_city</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_state_id</td>
-<td>string(2)</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_zip_code</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>race</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>party</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>phone</td>
+<td>callback</td>
 <td>string</td>
 <td>Optional</td>
 </tr>
+</tbody>
+</table>
+        
+<h3 id="success-response">Success Response</h3>
+<p>JSON dictionary with details about the report generation</p>
+<table>
+<thead>
 <tr>
-<td>phone_type</td>
+<th>Key</th>
+<th>Value Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
 <td>string</td>
-<td>Required if phone is provided</td>
+<td>"queued", or other current report status</td>
 </tr>
 <tr>
-<td>email_address</td>
+<td>report_id</td>
+<td>integer</td>
+<td>e.g. 17</td>
+</tr>
+<tr>
+<td>record_count</td>
+<td>integer</td>
+<td>e.g. 2314 total number of records being generated by this report</td>
+</tr>
+<tr>
+<td>current_index</td>
+<td>integer</td>
+<td>e.g. 100 current index of being processed by the report</td>
+</tr>
+<tr>
+<td>status_url</td>
 <td>string</td>
-<td></td>
+<td>e.g. "<a href="https://register.rockthevote.com/api/v4/registrant_reports/17" rel="nofollow">https://register.rockthevote.com/api/v4/registrant_reports/17</a>"</td>
 </tr>
 <tr>
-<td>opt_in_email</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>opt_in_sms</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>opt_in_volunteer</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>partner_opt_in_email</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>partner_opt_in_sms</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>partner_opt_in_volunteer</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>survey_question_1</td>
+<td>download_url</td>
 <td>string</td>
-<td></td>
+<td>may be empty if not complete. e.g. "<a href="https://register.rockthevote.com/api/v4/registrant_reports/17/download" rel="nofollow">https://register.rockthevote.com/api/v4/registrant_reports/17/download</a>"</td>
 </tr>
-<tr>
-<td>survey_answer_1</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>survey_question_2</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>survey_answer_2</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>finish_with_state</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>created_via_api</td>
-<td>boolean</td>
-<td></td>
-</tr>
-</tbody></table>
-
+</tbody>
+</table>
+        
 <h3 id="error-responses">Error Responses</h3>
-
-<h4 id="invalid-partner-or-api-key">Invalid Partner or API key</h4>
-
-<table><thead>
+        
+<h4 id="invalid-partner-or-api-key">Invalid Partner or API key</h4>  
+<table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>message</td>
 <td>string</td>
 </tr>
-</tbody></table>
-
-<h4 id="invalid-since">Invalid since</h4>
-
-<table><thead>
-<tr>
-<th>Key</th>
-<th>Value Type</th>
-<th>Note</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>field_name</td>
-<td>string</td>
-<td>Value: &ldquo;since&rdquo;</td>
-</tr>
-<tr>
-<td>message</td>
-<td>string</td>
-<td>Value: &ldquo;Invalid parameter value&rdquo;</td>
-</tr>
-</tbody></table>
-
+</tbody>
+</table>
+        
 <h4 id="syntax-error">Syntax Error</h4>
-
-<table><thead>
+<table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 <th>Note</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>field_name</td>
 <td>string</td>
@@ -1706,29 +1614,27 @@
 <tr>
 <td>message</td>
 <td>string</td>
-<td>Value: &ldquo;Invalid parameter type&rdquo;</td>
+<td>Value: "Invalid parameter type"</td>
 </tr>
-</tbody></table>
-
-<h2 id="gregistrations">gregistrations</h2>
-
-<p>For a given gpartner ­­— a government partner such as a local elections office ­­— checks partner_id (ID in the &ldquo;partners&rdquo; table) and corresponding API key, and returns partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.</p>
-
-<p>Optional &ldquo;email&rdquo; parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional &ldquo;since&rdquo; parameter limits returned records to those c reated after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the &ldquo;status&rdquo; out parameter. The callback parameter is an optional string parameter, exactly as described above.</p>
-
+</tbody>
+</table>
+        
+        
+<h2 id="gregistrant_reports">gregistrant_reports</h2>
+<p>For a given gpartner ­­— a government partner such as a local elections office ­­— checks partner_id (ID in the "partners" table) and corresponding API key, and initializes a report generation of partner­specific registration records. Partner account was created by the Rocky admin; API key was set then, and can be reset later by the Rocky admin. The record returned are those records for which the registrant’s ZIP code is one of the ZIP codes associated with the partner_id ­­ ZIP codes that were set by Rocky admin during creation, and can be updated.</p>
+<p>Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those c reated after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.</p>
 <h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET /api/v3/gregistrations.json</code></p>
-
+<p><code class="prettyprint">POST /api/v4/gregistrant_reports.json</code></p>
 <p>Returns registration records associated with the given government partner</p>
-
-<table><thead>
+<table>
+<thead>
 <tr>
 <th>Parameter</th>
 <th>Type</th>
 <th>Notes</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>gpartner_id</td>
 <td>string</td>
@@ -1754,222 +1660,102 @@
 <td>string</td>
 <td>Optional</td>
 </tr>
-</tbody></table>
-
+</tbody>
+</table>
+     
 <h3 id="success-response">Success Response</h3>
-
-<p>JSON dictionary with key <code class="prettyprint">registrations</code> and value is a list of dictionaries with the following key/value pairs:</p>
-
-<table><thead>
+        <p>JSON dictionary with details about the report generation</p>
+  
+        <table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 <th>Notes</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>status</td>
 <td>string</td>
-<td>&ldquo;complete&rdquo;, or reason for incomplete</td>
+<td>"queued", or other current report status</td>
 </tr>
 <tr>
-<td>create_time</td>
+<td>report_id</td>
+<td>integer</td>
+<td>e.g. 17</td>
+</tr>
+<tr>
+<td>record_count</td>
+<td>integer</td>
+<td>e.g. 2314 total number of records being generated by this report</td>
+</tr>
+<tr>
+<td>current_index</td>
+<td>integer</td>
+<td>e.g. 100 current index of being processed by the report</td>
+</tr>
+<tr>
+<td>status_url</td>
 <td>string</td>
-<td>UTC datetime format</td>
+<td>e.g. "<a href="https://register.rockthevote.com/api/v4/gregistrant_reports/17" rel="nofollow">https://register.rockthevote.com/api/v4/gregistrant_reports/17</a>"</td>
 </tr>
 <tr>
-<td>complete_time</td>
+<td>download_url</td>
 <td>string</td>
-<td>UTC datetime format</td>
+<td>may be empty if not complete. e.g. "<a href="https://register.rockthevote.com/api/v4/gregistrant_reports/17/download" rel="nofollow">https://register.rockthevote.com/api/v4/gregistrant_reports/17/download</a>"</td>
 </tr>
-<tr>
-<td>lang</td>
-<td>locale­ compatible string</td>
-<td>en/es/fr, etc</td>
-</tr>
-<tr>
-<td>first_reg</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>citizen</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>first_registration</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>home_zip_code</td>
-<td>string</td>
-<td>5 digits, ‘zzzzz’</td>
-</tr>
-<tr>
-<td>us_citizen</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>name_title</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>first_name</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>middle_name</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>last_name</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>name_suffix</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_address</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_unit</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_city</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>home_state_id</td>
-<td>string(2)</td>
-<td></td>
-</tr>
-<tr>
-<td>has_mailing_address</td>
-<td>boolean</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_address</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_unit</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_city</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_state_id</td>
-<td>string(2)</td>
-<td></td>
-</tr>
-<tr>
-<td>mailing_zip_code</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>race</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>party</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>phone</td>
-<td>string</td>
-<td>Optional</td>
-</tr>
-<tr>
-<td>phone_type</td>
-<td>string</td>
-<td>Requried if phone provided</td>
-</tr>
-<tr>
-<td>email_address</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>source_tracking_id</td>
-<td>string</td>
-<td></td>
-</tr>
-<tr>
-<td>partner_tracking_id</td>
-<td>string</td>
-<td></td>
-</tr>
-</tbody></table>
-
+</tbody>
+</table>
 <h3 id="error-responses">Error Responses</h3>
 
 <h4 id="invalid-partner-or-api-key">Invalid Partner or API key</h4>
-
-<table><thead>
+<table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>message</td>
 <td>string</td>
 </tr>
-</tbody></table>
-
+</tbody>
+</table>
 <h4 id="invalid-since">Invalid since</h4>
-
-<table><thead>
+<table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 <th>Notes</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>field_name</td>
 <td>string</td>
-<td>Value: &ldquo;since&rdquo;</td>
+<td>Value: "since"</td>
 </tr>
 <tr>
 <td>message</td>
 <td>string</td>
-<td>Value: &ldquo;Invalid parameter value&rdquo;</td>
+<td>Value: "Invalid parameter value"</td>
 </tr>
-</tbody></table>
-
+</tbody>
+</table>
 <h4 id="syntax-error">Syntax Error</h4>
-
-<table><thead>
+<table>
+<thead>
 <tr>
 <th>Key</th>
 <th>Value Type</th>
 <th>Notes</th>
 </tr>
-</thead><tbody>
+</thead>
+<tbody>
 <tr>
 <td>field_name</td>
 <td>string</td>
@@ -1978,18 +1764,139 @@
 <tr>
 <td>message</td>
 <td>string</td>
-<td>Value: &ldquo;Invalid parameter type&rdquo;</td>
+<td>Value: "Invalid parameter type"</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>        
+        
+        
+        
+<h2 id="report_status">report status</h2>
+<p>For a given partner, checks <code>partner_id</code> (ID in the "partners" table) and corresponding API key, and returns status of previously queued report.</p>
+<h3 id="http-request">HTTP Request</h3>
+<p><code class="prettyprint">GET /api/v4/gregistrant_reports/<ID>.json</code></p>
+<p>Returns report record with ID and URL for checking report status</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>partner_id</td>
+<td>string</td>
+<td>Required, series of digits, no specific length</td>
+</tr>
+<tr>
+<td>partner_API_key</td>
+<td>string</td>
+<td>Required, no specific length</td>
+</tr>
+<tr>
+<td>callback</td>
+<td>string</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+        
+<h3 id="success-response">Success Response</h3>
+<p>JSON dictionary with details about the report generation</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>string</td>
+<td>"queued", or other current report status</td>
+</tr>
+<tr>
+<td>report_id</td>
+<td>integer</td>
+<td>e.g. 17</td>
+</tr>
+<tr>
+<td>record_count</td>
+<td>integer</td>
+<td>e.g. 2314 total number of records being generated by this report</td>
+</tr>
+<tr>
+<td>current_index</td>
+<td>integer</td>
+<td>e.g. 100 current index of being processed by the report</td>
+</tr>
+<tr>
+<td>status_url</td>
+<td>string</td>
+<td>e.g. "<a href="https://register.rockthevote.com/api/v4/gregistrant_reports/17" rel="nofollow">https://register.rockthevote.com/api/v4/registrant_reports/17</a>"</td>
+</tr>
+<tr>
+<td>download_url</td>
+<td>string</td>
+<td>may be empty if not complete. e.g. "<a href="https://register.rockthevote.com/api/v4/gregistrant_reports/17/download" rel="nofollow">https://register.rockthevote.com/api/v4/registrant_reports/17/download</a>"</td>
+</tr>
+</tbody>
+</table>
+        
+<h3 id="error-responses">Error Responses</h3>
+        
+<h4 id="invalid-partner-or-api-key">Invalid Partner or API key</h4>  
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+        
+<h4 id="syntax-error">Syntax Error</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value Type</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>field_name</td>
+<td>string</td>
+<td>Name of field that is not defined for this request</td>
+</tr>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Value: "Invalid parameter type"</td>
+</tr>
+</tbody>
+</table>
+<!--end new reporting-->      
+        
+        
+        
+        
 
 <h2 id="partners">partners</h2>
-
 <p>Creates a new partner, very similar to partner creation in the Web UI of the partner portal.</p>
-
 <h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">POST /api/v3/partners.json</code></p>
-
+<p><code class="prettyprint">POST /api/v4/partners.json</code></p>
 <p>Post JSON dictionary of fields nested under <code class="prettyprint">partner</code></p>
 
 <table><thead>
@@ -2116,7 +2023,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET /api/v3/partners/[partner_id].json</code></p>
+<p><code class="prettyprint">GET /api/v4/partners/[partner_id].json</code></p>
 
 <table><thead>
 <tr>
@@ -2423,7 +2330,7 @@
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET /api/v3/partnerpublicprofiles/[partner_id].json</code></p>
+<p><code class="prettyprint">GET /api/v4/partnerpublicprofiles/[partner_id].json</code></p>
 
 <table><thead>
 <tr>
