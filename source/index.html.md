@@ -698,6 +698,7 @@ message | string | Value: "Invalid parameter type"
 
 For a given partner, checks `partner_id` (ID in the "partners" table) and corresponding API key, and starts generation of partner­-specific registration records. Partner account was created using Rocky web UI; API key was set then, and can be reset later via admin UI. Optional "email" parameter filters the partner’s registration records, to return only those with an email address that matches the address provided in the parameter. Optional "since" parameter limits returned records to those created after the date­time provided as parameter value; the records include those that were started but not completed, and a noted via the "status" out parameter. The callback parameter is an optional string parameter, exactly as described above.
 
+
 ### HTTP Request
 
 `POST /api/v4/registrant_reports.json`
@@ -712,7 +713,17 @@ since | string | Optional, UTC datetime format
 before | string | Optional, UTC datetime format
 email | string | Optional, email name at domain format
 callback | string | Optional
+report_type | string | Optional. Currently the only valid value is "extended". Used to indicate an alternate CSV format with added fields.
 
+### "Extended" Report Type Field Definitions
+
+Field | Description
+----- | -----------
+VR Application Status | This is specific to the PA field app. This field indicates the status of a user’s voter registration application with the state.
+VR Application Status Details | This is specific to the PA field app. This field indicates the details/reason for a user’s voter registration application status.
+VR Application Status Imported DateTime | This is specific to the PA field app. It indicates when the user's application status was last imported/updated.
+Built via API | This field indicates that the user’s registration was created as the result of an API call, rather than a session on Rock the Vote’s default web-based user interface. This includes registrations created via the PA field app & via the nationwide Rock the Vote API.
+Pre-Registered | If a user is not old enough to be fully registered (which will be noted under “Ineligible reason”), but is eligible for pre-registration in their state, this field will indicate whether they completed the pre-registration process.
 
 ### Success Response
 
@@ -774,8 +785,6 @@ Key | Value Type | Note
 --- | ---------- | -----
 field_name | string | Name of field that is not defined for this request
 message | string | Value: "Invalid parameter type"
-
-
 
 
 
