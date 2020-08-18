@@ -1677,6 +1677,41 @@
 </tr>
 </tbody>
 </table>
+        
+<h3 id="extended-report-field-definitions">"Extended" Report Type Field Definitions</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Field Name</th>
+  <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+<tr>
+  <td>VR Application Status</td>
+  <td>This is specific to the PA field app. This field indicates the status of a user’s voter registration application with the state.</td>
+</tr>
+<tr>
+  <td>VR Application Status Details</td>
+  <td>This is specific to the PA field app. This field indicates the details/reason for a user’s voter registration application status.</td>
+</tr>
+<tr>
+  <td>VR Application Status Imported DateTime</td>
+  <td>This is specific to the PA field app. It indicates when the user's application status was last imported/updated.</td>
+</tr>
+<tr>
+  <td>Built via API</td>
+  <td>This field indicates that the user’s registration was created as the result of an API call, rather than a session on Rock the Vote’s default web-based user interface. This includes registrations created via the PA field app & via the nationwide Rock the Vote API.</td>
+</tr>
+<tr>
+  <td>Pre-Registered</td>
+  <td>If a user is not old enough to be fully registered (which will be noted under “Ineligible reason”), but is eligible for pre-registration in their state, this field will indicate whether they completed the pre-registration process.</td>
+</tr>
+  </tbody>
+        </table>
+
+        
      
 <h3 id="success-response">Success Response</h3>
         <p>JSON dictionary with details about the report generation</p>
