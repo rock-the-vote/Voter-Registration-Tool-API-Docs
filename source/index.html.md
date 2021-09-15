@@ -724,6 +724,24 @@ VR Application Status Details | This is specific to the PA field app. This field
 VR Application Status Imported DateTime | This is specific to the PA field app. It indicates when the user's application status was last imported/updated.
 Built via API | This field indicates that the user’s registration was created as the result of an API call, rather than a session on Rock the Vote’s default web-based user interface. This includes registrations created via the PA field app & via the nationwide Rock the Vote API.
 Pre-Registered | If a user is not old enough to be fully registered (which will be noted under “Ineligible reason”), but is eligible for pre-registration in their state, this field will indicate whether they completed the pre-registration process.
+Has State License | This is specific to the PA field app and indicates whether a registrant included a state-issued ID number.
+Has SSN | This is specific to the PA field app and indicates whether a registrant included the last 4 digits of their SSN.
+VR Application Submission Modifications | This is specific to the PA field app. This field indicates what, if any, modifications were required to submit a user’s voter registration application.
+VR Application Submission Errors | This is specific to the PA field app. This field indicates what, if any, errors occurred with a user’s voter registration application.
+Submitted Via State API | This field is specific to the PA field app and indicates if the registration has or has not been submitted via the State API.
+Submitted Signature to State API | This field is specific to the PA field app and indicates if the registration has or has not been submitted via the State API.
+utm_source, utm_medium, utm_campaign, utm_term, utm_content | utm_  source codes that you add to your tool’s URL will be located in these fields.
+Other_parameters | Indicates parameters added to your base URL not listed above. 
+Change of Name | This indicates whether the registrant says they had changed their name since they last registered to vote. 
+Prev Name Title | Prev First Name, Prev Middle Name, Prev Last Name, Prev Name Suffix: These fields provide the previous name of the registrant as it was inputted into the OVR tool.
+Registration Source | This is specific to the PA field app.
+Registration Medium | This is specific to the PA field app.
+Shift ID | This is specific to the PA field app.
+Blocks Shift ID | This is specific to the PA field app.
+Over 18 Affirmed | This is specific to the PA field app.
+Preferred Language | This is specific to the PA field app.
+State Flow Status | This is specific to the PA field app.
+State API Transaction ID | This is specific to the PA field app.
 
 ### Success Response
 
