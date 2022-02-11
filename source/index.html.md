@@ -703,7 +703,7 @@ For a given partner, checks `partner_id` (ID in the "partners" table) and corres
 
 `POST /api/v4/registrant_reports.json`
 
-Returns report record with ID and URL for checking report status
+Returns a status_url to call to check on the report progress. Calls to that URL will return a download_url in the response once the report is complete.
 
 Parameter | Type | Notes
 --------- | ---- | -----
@@ -713,7 +713,20 @@ since | string | Optional, UTC datetime format
 before | string | Optional, UTC datetime format
 email | string | Optional, email name at domain format
 callback | string | Optional
-report_type | string | Optional. Currently the only valid value is "extended". Used to indicate an alternate CSV format with added fields.
+report_type | string | Optional. See valid report_type values in table below. Used to indicate an alternate CSV format with added fields.
+
+### Valid report_type Values
+
+Value | Description
+----- | -----------
+blank | Leave blank for report on the online voter registration tool.
+extended | Alternate CSV format for OVR with added fields.
+alert_request_report | Pledge to Vote report
+abr_report | Absentee Ballot Request report
+lookup_report | Voter Status Lookup report
+grommet_registrants_report | PA APP Registrants Report
+canvassing_shift_report | Canvassing Shift Report
+grommet_shift_report | PA Shift Report
 
 ### "Extended" Report Type Field Definitions
 
