@@ -1415,7 +1415,7 @@
 
         <h3 id="http-request">HTTP Request</h3>
 <p><code class="prettyprint">POST /api/v4/registrant_reports.json</code></p>
-<p>Returns report record with ID and URL for checking report status</p>
+<p>Returns a status_url to call to check on the report progress. Calls to that URL will return a download_url in the response once the report is complete.</p>
 <table>
 <thead>
 <tr>
@@ -1458,11 +1458,55 @@
 <tr>
 <td>report_type</td>
 <td>string</td>
-<td>Optional. Currently the only valid value is "extended". Used to indicate an alternate CSV format with added fields.</td>
+<td>Optional. See valid report_type values in table below. Used to indicate an alternate CSV format with added fields.</td>
 </tr>
 </tbody>
 </table>
         
+<h3 id="valid-report-type-values">Valid report_type Values</h3>        
+       
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>blank</td>
+<td>Leave blank for report on the online voter registration tool.</td>
+</tr>
+<tr>
+<td>extended</td>
+<td>Alternate CSV format for OVR with added fields.</td>
+</tr>
+<tr>
+<td>alert_request_report</td>
+<td>Pledge to Vote report</td>
+</tr>
+<tr>
+<td>abr_report</td>
+<td>Absentee Ballot Request report</td>
+</tr>
+<tr>
+<td>lookup_report</td>
+<td>Voter Status Lookup report</td>
+</tr>
+<tr>
+<td>grommet_registrants_report</td>
+<td>PA APP Registrants Report</td>
+</tr>
+<tr>
+<td>canvassing_shift_report</td>
+<td>Canvassing Shift Report</td>
+</tr>
+<tr>
+<td>grommet_shift_report</td>
+<td>PA Shift Report</td>
+</tr>
+</tbody>
+</table>
         
 <h3 id="extended-report-field-definitions">"Extended" Report Type Field Definitions</h3>
 
