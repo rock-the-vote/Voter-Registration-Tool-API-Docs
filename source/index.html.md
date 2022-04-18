@@ -836,13 +836,55 @@ Parameter | Type | Notes
 gpartner_id | string | Series of digits, no specific length
 gpartner_API_key | string | No specific length
 since | string | Optional, UTC datetime format
+before | string | Optional, UTC datetime format
 email | string | Optional, email name at domain format
 callback | string | Optional
+report_type | string | Optional. See valid report_type values in table below. Used to indicate an alternate CSV format with added fields.
+
+### Valid report_type Values
+
+Value | Description
+----- | -----------
+blank | Leave blank for report on the online voter registration tool.
+extended | Alternate CSV format for OVR with added fields.
+alert_request_report | Pledge to Vote report
+abr_report | Absentee Ballot Request report
+lookup_report | Voter Status Lookup report
+grommet_registrants_report | PA Registration Report (PA App only)
+canvassing_shift_report | Canvassing Shift Report (PA App only)
+grommet_shift_report | PA Shift Report (Old versions of PA App only)
+
+### "Extended" Report Type Field Definitions
+
+Field | Description
+----- | -----------
+VR Application Status | This is specific to the PA field app. This field indicates the status of a user’s voter registration application with the state.
+VR Application Status Details | This is specific to the PA field app. This field indicates the details/reason for a user’s voter registration application status.
+VR Application Status Imported DateTime | This is specific to the PA field app. It indicates when the user's application status was last imported/updated.
+Built via API | This field indicates that the user’s registration was created as the result of an API call, rather than a session on Rock the Vote’s default web-based user interface. This includes registrations created via the PA field app & via the nationwide Rock the Vote API.
+Pre-Registered | If a user is not old enough to be fully registered (which will be noted under “Ineligible reason”), but is eligible for pre-registration in their state, this field will indicate whether they completed the pre-registration process.
+Has State License | This is specific to the PA field app and indicates whether a registrant included a state-issued ID number.
+Has SSN | This is specific to the PA field app and indicates whether a registrant included the last 4 digits of their SSN.
+VR Application Submission Modifications | This is specific to the PA field app. This field indicates what, if any, modifications were required to submit a user’s voter registration application.
+VR Application Submission Errors | This is specific to the PA field app. This field indicates what, if any, errors occurred with a user’s voter registration application.
+Submitted Via State API | This field is specific to the PA field app and indicates if the registration has or has not been submitted via the State API.
+Submitted Signature to State API | This field is specific to the PA field app and indicates if the registration has or has not been submitted via the State API.
+utm_source, utm_medium, utm_campaign, utm_term, utm_content | utm_  source codes that you add to your tool’s URL will be located in these fields.
+Other_parameters | Indicates parameters added to your base URL not listed above. 
+Change of Name | This indicates whether the registrant says they had changed their name since they last registered to vote. 
+Prev Name Title | Prev First Name, Prev Middle Name, Prev Last Name, Prev Name Suffix: These fields provide the previous name of the registrant as it was inputted into the OVR tool.
+Registration Source | This is specific to the PA field app.
+Registration Medium | This is specific to the PA field app.
+Shift ID | This is specific to the PA field app.
+Blocks Shift ID | This is specific to the PA field app.
+Over 18 Affirmed | This is specific to the PA field app.
+Preferred Language | This is specific to the PA field app.
+State Flow Status | This is specific to the PA field app.
+State API Transaction ID | This is specific to the PA field app.
 
 ### Success Response
 
 JSON dictionary with details about the report generation
-
 
 Key | Value Type | Notes
 --- | ---------- | -----
