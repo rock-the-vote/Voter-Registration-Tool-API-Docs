@@ -724,9 +724,9 @@ extended | Alternate CSV format for OVR with added fields.
 alert_request_report | Pledge to Vote report
 abr_report | Absentee Ballot Request report
 lookup_report | Voter Status Lookup report
-grommet_registrants_report | PA APP Registrants Report
-canvassing_shift_report | Canvassing Shift Report
-grommet_shift_report | PA Shift Report
+grommet_registrants_report | PA Registration Report (PA App only)
+canvassing_shift_report | Canvassing Shift Report (PA App only)
+grommet_shift_report | PA Shift Report (Old versions of PA App only)
 
 ### "Extended" Report Type Field Definitions
 
