@@ -3,7 +3,7 @@
 title: Rocky RESTful API Version 4.0 (Unofficial)
 
 toc_footers:
-  - <a href='https://www.rockthevote.org/programs-and-partner-resources/tech-for-civic-engagement/online-voter-registration-platform/'>Sign Up for a Developer Key</a>
+  - Sign Up for a Developer Key https://www.rockthevote.org/programs-and-partner-resources/tech-for-civic-engagement/online-voter-registration-platform/ 
 
 search: true
 ---
