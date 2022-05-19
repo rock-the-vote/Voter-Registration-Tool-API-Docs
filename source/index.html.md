@@ -54,7 +54,7 @@ Added these interfaces:
 
 In addition: 
 
-* Added parameter for registration and gregistration to indicate async PDF generation or response blocking PDF generation.
+* Added parameter for registration to indicate async PDF generation or response blocking PDF generation.
 * Added parameter for custom stop_reminders url. Added UID to the response.
 * Modified format from `/api/v3/partners/partner.json` to `/api/v3/partners/[partner_id].json`
 * Added `application/registration/partner` CSS urls, `finish_iframe_url`, `external_tracking_snippet`, `registration_instructions_url` to `/api/v3/partners/[partner_id].json` response.
