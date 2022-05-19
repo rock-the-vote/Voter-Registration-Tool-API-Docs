@@ -28,7 +28,7 @@ Finally, the API includes the "partner_registrations" interface to obtain record
 
 ## V4
 
-The registration submission endpoint (/api/v4/registrations and /api/v4/gregistrations) will now return a validation error if the email address submitted is in our block list.
+The registration submission endpoint (/api/v4/registrations) will now return a validation error if the email address submitted is in our block list.
 
 ### Removed 
 
@@ -43,9 +43,6 @@ We will also depreacte old versions (v1, v2, v3) of these APIs shortly and retur
 * `GET /api/v4/registrant_reports/<ID>` - check the status of a particular report and get the download URL
 * `GET /api/v4/registrant_reports/<ID>/download` - download the contents of a registrant report in CSV format
 
-* `POST /api/v4/gregistrant_reports` - create report
-* `GET /api/v4/gregistrant_reports/<ID>` - check the status of a particular report and get the download URL
-* `GET /api/v4/gregistrant_reports/<ID>/download` - download the contents of a registrant report in CSV format
 
 ## V3
 
