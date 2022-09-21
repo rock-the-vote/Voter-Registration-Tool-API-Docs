@@ -137,7 +137,7 @@
         
 <h2 id="v4">V4</h2>
 
-<p>The registration submission endpoint (/api/v4/registrations) will now return a validation error if the email address submitted is in our block list.</p>
+<p>The registration submission endpoint (/api/v4/registrations and /api/v4/gregistrations) will now return a validation error if the email address submitted is in our block list.</p>
 
 <p>Removed</p>
 
@@ -190,6 +190,9 @@
 
 <ul>
 <li><code class="prettyprint">GET /api/v2/partnerpublicprofiles/partner.json</code></li>
+<li><code class="prettyprint">GET /api/v2/gregistrationstates.json</code></li>
+<li><code class="prettyprint">POST /api/v2/gregistration.json</code></li>
+<li><code class="prettyprint">GET /api/v2/gregistrations.json</code></li>
 </ul>
 
 <p>Since this addition did not modify the existing API, did not rev from v2 to v3.</p>
@@ -825,6 +828,118 @@
 <td>Determined by Rocky, for display by caller, in specified lang</td>
 </tr>
 </tbody></table>
+        
+<h2 id="gregistrations">gregistrations</h2>
+
+<p>Creates a new registrant record using the input parameter data, for the use case where the user was eligible to finish their registration on a government operated state­ specific web site, chose to be re­directed there, and did not return ­­ presumably because they finished registration on the state’s site.</p>
+
+<p>Differs from registrations only in the following ways:</p>
+
+<ul>
+<li>Only the following parameters are required
+
+<ul>
+<li>lang</li>
+<li>partner_id</li>
+<li>send_confirmation_reminder_emails</li>
+<li>date_of_birth</li>
+<li>email_address</li>
+<li>home_zip_code</li>
+<li>us_citizen</li>
+<li>name_title</li>
+<li>last_name</li>
+</ul></li>
+<li>If <code class="prettyprint">send_confirmation_reminder_emails</code> is true, then the emails sent are the the emails that are pertinent to this use case, rather than the standard use case of completing a registration using the Rocky UI</li>
+<li>The PDF is not generated, and therefore the <code class="prettyprint">async</code> parameter has no effect</li>
+<li>Success has no output parameters</li>
+<li>There is an additional error return code</li>
+</ul>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">POST /api/v4/gregistrations.json</code></p>
+
+<p>Post a JSON object with key <code class="prettyprint">registration</code> and value of a registration object</p>
+
+<h3 id="success">Success</h3>
+
+<p>No body</p>
+
+<h3 id="errors">Errors</h3>
+
+<h4 id="unsupported-state">Unsupported state</h4>
+
+<table><thead>
+<tr>
+<th>Key</th>
+<th>Value Type</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+</tr>
+</tbody></table>
+
+<p>See <a href="#registrations-errors">registrations interface definition errors</a> for other return data definitions.</p>
+
+<h2 id="bulk_gregistrations">bulk_gregistrations</h2>
+
+<p>Same as gregistrations but expects an array of registrant records and returns the number of records created.</p>
+
+<h3 id="fields">Fields</h3>
+
+<p><a href="#registration-fields">Registration interface definition fields</a>, plus these fields (all required):</p>
+
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>status</td>
+<td>string</td>
+<td>Indicates a step number that the user stopped at</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>string</td>
+<td>UTC datetime format</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>string</td>
+<td>UTC datetime format</td>
+</tr>
+</tbody></table>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">POST /api/v4/bulk_gregistrations.json</code></p>
+
+<p>Body is JSON dictionary with a single key, <code class="prettyprint">bulk_gregistrations</code>, and value as a list of bulk registration dictionaries, as described above.</p>
+
+<h3 id="success-response">Success Response</h3>
+
+<p>Body is a dictionary with key <code class="prettyprint">bulk_gregistrations</code>, and the value is an integer with the number of records written, which should be the number of registrations posted.</p>
+
+<h3 id="error">Error</h3>
+
+<p>If any registrations have an error, a status code 400 is returned, with a JSON list of responses for each record that is either an empty hash ({}) if there are no errors for that user, or a dictionary with <code class="prettyprint">type</code>, <code class="prettyprint">field_name</code> and <code class="prettyprint">message</code> if there is an error</p>
+
+<h2 id="gregistrationstates">gregistrationstates</h2>
+
+<p>Returns a list of state for which Rocky current supports per­-state integration with states. There are no input parameters. State return data is the 2 letter code for the state, and the URL to use to send registrant data to the state’s web site.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET /api/v4/gregistrationstates.json</code></p>
+
+<h3 id="response">Response</h3>
+
+<p>Returns status code 200, with both of a dictionary with one key, <code class="prettyprint">states</code>, which is a list of dictionaries with two keys: <code class="prettyprint">name</code> which is the 2 letter state code, and <code class="prettyprint">url</code> which is a string URL.</p>
 
 <h2 id="state_requirements">state_requirements</h2>
 
