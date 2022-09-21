@@ -28,7 +28,7 @@ Finally, the API includes the "partner_registrations" interface to obtain record
 
 ## V4
 
-The registration submission endpoint (/api/v4/registrations) will now return a validation error if the email address submitted is in our block list.
+The registration submission endpoint (/api/v4/registrations and /api/v4/gregistrations) will now return a validation error if the email address submitted is in our block list.
 
 ### Removed 
 
@@ -71,6 +71,9 @@ to allow for all survey question languages.
 Added these interfaces:
 
 * `GET /api/v2/partnerpublicprofiles/partner.json`
+* `GET /api/v2/gregistrationstates.json`
+* `POST /api/v2/gregistration.json`
+* `GET /api/v2/gregistrations.json`
 
 Since this addition did not modify the existing API, did not rev from v2 to v3.
 
@@ -358,7 +361,139 @@ field_name | string | Field where error occurred
 message | string | Determined by Rocky, for display by caller, in specified lang
 
 
-## state_requirements
+## gregistrations
+
+Creates a new registrant record using the input parameter data, for the use case where the user was eligible to finish their registration on a government operated state­ specific web site, chose to be re­directed there, and did not return ­­ presumably because they finished registration on the state’s site.
+
+ Differs from registrations only in the following ways:
+
+ * Only the following parameters are required
+   * lang
+   * gpartner_id
+   * send_confirmation_reminder_emails
+   * date_of_birth
+   * email_address
+   * home_zip_code
+   * us_citizen
+   * name_title
+   * last_name
+ * If `send_confirmation_reminder_emails` is true, then the emails sent are the the emails that are pertinent to this use case, rather than the standard use case of completing a registration using the Rocky UI
+ * The PDF is not generated, and therefore the `async` parameter has no effect
+ * Success has no output parameters
+ * There is an additional error return code
+
+ ### HTTP Request
+
+ ```json
+ {
+   "registration": {
+     "lang": "en",
+     "gpartner_id": "123456789",
+     "send_confirmation_reminder_emails": true,
+     "date_of_birth": "01-01-1990",
+     "email_address": "me@me.com",
+     "home_zip_code": "01234",
+     "us_citizen": true,
+     "name_title": "Mrs.",
+     "last_name": "Smith"
+   }
+ }
+ ```
+
+ `POST /api/v4/gregistrations.json`
+
+ Post a JSON object with key `registration` and value of a registration object
+
+ ### Success
+
+ No body
+
+ ### Errors
+
+ #### Unsupported state
+
+ Key | Value Type
+ --- | ---------
+ message | string
+
+ See [registrations interface definition errors](#registrations-errors) for other return data definitions.
+
+ ## bulk_gregistrations
+
+ Same as gregistrations but expects an array of registrant records and returns the number of records created.
+
+ ### Fields
+
+ [Registration interface definition fields](#registration-fields), plus these fields (all required):
+
+ Field | Type | Notes
+ ----- | ---- | -----
+ status | string | Indicates a step number that the user stopped at
+ created_at | string | UTC datetime format
+ updated_at | string | UTC datetime format
+
+ ### HTTP Request
+
+ `POST /api/v4/bulk_gregistrations.json`
+
+ Body is JSON dictionary with a single key, `bulk_gregistrations`, and value as a list of bulk registration dictionaries, as described above.
+
+ ### Success Response
+
+ Body is a dictionary with key `bulk_gregistrations`, and the value is an integer with the number of records written, which should be the number of registrations posted.
+
+ > Success Response
+
+ ```json
+ {
+   "bulk_gregistrations": "integer (number of records written)"
+ }
+ ```
+
+ ### Error
+
+ If any registrations have an error, a status code 400 is returned, with a JSON list of responses for each record that is either an empty hash ({}) if there are no errors for that user, or a dictionary with `type`, `field_name` and `message` if there is an error
+
+ > Example object for a user with an error
+
+ ```json
+ {
+   "type": "string (ValidationError, SyntaxError, UnsupportedLanguageError)",
+   "field_name": "string (field where error occurred)",
+   "message": "string (determined by Rocky, for display by caller, in specified lang)"
+ }
+ ```
+
+ ## gregistrationstates
+
+ Returns a list of state for which Rocky current supports per­-state integration with states. There are no input parameters. State return data is the 2 letter code for the state, and the URL to use to send registrant data to the state’s web site.
+
+ ### HTTP Request
+
+ `GET /api/v4/gregistrationstates.json`
+
+ ### Response
+
+ Returns status code 200, with both of a dictionary with one key, `states`, which is a list of dictionaries with two keys: `name` which is the 2 letter state code, and `url` which is a string URL.
+
+ > Example response (truncated)
+
+ ```json
+ {
+   "states": [
+     {
+       "name": "AZ",
+       "url": "https://servicearizona.com/webapp/evoter/selectLanguage"
+     },
+     {
+       "name": "CA",
+       "url": "https://covrtest.sos.ca.gov?language=LANGUAGE&t=p&CovrAgencyKey=AGENCY_KEY&PostingAgencyRecordId=TOKEN"
+     }
+   ]
+ }
+ ```
+
+ ## state_requirements
 
 Checks state eligibility and provides state­ specific fields information
 
