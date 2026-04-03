@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 ruby '3.3.0'
 
 # Middleman and ecosystem (upgrade to Middleman 5.x)
-gem 'middleman', '~> 5.0'
+gem 'middleman', '5.0.0.rc.1'
 gem 'middleman-gh-pages', '~> 0.3'
 gem 'middleman-syntax', '~> 3.0'
 gem 'middleman-autoprefixer', '~> 3.0'
