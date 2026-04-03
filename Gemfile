@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Target modern Ruby for 2026
-ruby '3.2.2'
+ruby '3.3.0'
 
 # Middleman and ecosystem (upgrade to Middleman 5.x)
 gem 'middleman', '~> 5.0'
