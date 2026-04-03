@@ -5,6 +5,9 @@
   document.addEventListener('DOMContentLoaded',function(){
     var tocContainer=document.getElementById('toc');
     if(!tocContainer) return;
+    // inject CSS to ensure sidebar links are visible on dark background
+    var css = '.tocify-wrapper a, .tocify-wrapper .tocify-item>a, .tocify-wrapper .toc-footer a { color: #fff !important; text-decoration: none !important; } .tocify-wrapper a:visited { color: #fff !important; } .tocify-wrapper a:hover, .tocify-wrapper .tocify-item>a:hover, .tocify-wrapper .toc-footer a:hover { color: #fff !important; text-decoration: underline !important; }';
+    try { var s = document.createElement('style'); s.appendChild(document.createTextNode(css)); document.head.appendChild(s); } catch(e) {}
     if(tocContainer.children.length>0) return;
     var content=document.querySelector('.content');
     if(!content) return;
