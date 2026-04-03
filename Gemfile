@@ -9,7 +9,6 @@ gem 'middleman-gh-pages', '~> 0.3'
 gem 'middleman-syntax', '~> 3.0'
 gem 'middleman-autoprefixer', '~> 3.0'
 # Sprockets integration: middleman-sprockets may be replaced by newer plugins
-gem 'middleman-sprockets', '~> 4.0'
 gem 'rouge', '~> 3.0'
 gem 'redcarpet', '~> 3.6.0'
 
