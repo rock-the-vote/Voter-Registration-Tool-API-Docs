@@ -7,3 +7,9 @@ updates:
     open-pull-requests-limit: 10
     # allow security updates to be opened immediately
     security-updates: true
+automerged_updates:
+  - match:
+      update_type: "security"
+    merge_method: "squash"
+    commit_message:
+      prefix: "chore(deps):"
