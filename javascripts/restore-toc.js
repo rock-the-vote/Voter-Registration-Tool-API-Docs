@@ -12,22 +12,57 @@
     if(headings.length===0) return;
 
     var ul=document.createElement('ul'); ul.className='tocify';
+
+    var currentLi=null;
     headings.forEach(function(h){
       var id=h.id || slugify(h.textContent);
       if(!h.id) h.id=id;
-      var li=document.createElement('li');
-      li.className='tocify-item';
-      // mark subheaders so styling aligns
-      if(h.tagName.toLowerCase()==='h2') li.className += ' tocify-subheader';
-      var a=document.createElement('a');
-      a.href='#'+id;
-      a.textContent = h.textContent;
-      a.addEventListener('click', function(){ var wrap=document.querySelector('.tocify-wrapper'); if(wrap) wrap.classList.remove('open'); var nb=document.getElementById('nav-button'); if(nb) nb.classList.remove('open'); });
-      li.appendChild(a);
-      ul.appendChild(li);
+      var tag=h.tagName.toLowerCase();
+      if(tag==='h1'){
+        currentLi=document.createElement('li');
+        currentLi.className='tocify-item tocify-h1';
+        var a=document.createElement('a'); a.href='#'+id; a.textContent=h.textContent;
+        a.addEventListener('click',function(){ var wrap=document.querySelector('.tocify-wrapper'); if(wrap) wrap.classList.remove('open'); var nb=document.getElementById('nav-button'); if(nb) nb.classList.remove('open'); });
+        currentLi.appendChild(a);
+        ul.appendChild(currentLi);
+      } else if(tag==='h2'){
+        if(!currentLi){
+          currentLi=document.createElement('li');
+          currentLi.className='tocify-item';
+          ul.appendChild(currentLi);
+        }
+        var subUl=currentLi.querySelector('ul');
+        if(!subUl){ subUl=document.createElement('ul'); subUl.className='tocify-subheader'; currentLi.appendChild(subUl); }
+        var subLi=document.createElement('li'); subLi.className='tocify-item tocify-h2';
+        var a=document.createElement('a'); a.href='#'+id; a.textContent=h.textContent;
+        a.addEventListener('click',function(){ var wrap=document.querySelector('.tocify-wrapper'); if(wrap) wrap.classList.remove('open'); var nb=document.getElementById('nav-button'); if(nb) nb.classList.remove('open'); });
+        subLi.appendChild(a);
+        subUl.appendChild(subLi);
+      }
     });
 
     tocContainer.appendChild(ul);
+
+    // make h1 items toggle their sublists
+    var topItems = tocContainer.querySelectorAll('.tocify-h1');
+    topItems.forEach(function(li){
+      var sub = li.querySelector('.tocify-subheader');
+      if(sub){
+        li.classList.add('has-sub');
+        var a = li.querySelector('a');
+        a.style.cursor='pointer';
+        a.addEventListener('click', function(e){
+          // only toggle when clicked on the label (prevent immediate navigate)
+          // allow ctrl/cmd+click to open in new tab
+          if (e.metaKey || e.ctrlKey) return;
+          e.preventDefault();
+          var isOpen = li.classList.toggle('open');
+          if(isOpen){ sub.style.display='block'; } else { sub.style.display='none'; }
+        });
+        // start closed
+        sub.style.display='none';
+      }
+    });
 
     var navBtn=document.getElementById('nav-button');
     if(navBtn){ navBtn.addEventListener('click', function(e){ e.preventDefault(); var wrap=document.querySelector('.tocify-wrapper'); if(wrap) wrap.classList.toggle('open'); this.classList.toggle('open'); }); }
