@@ -1,4 +1,5 @@
 # Markdown
+require_relative "lib/uri_compat"
 set :markdown_engine, :redcarpet
 set :markdown,
     fenced_code_blocks: true,
