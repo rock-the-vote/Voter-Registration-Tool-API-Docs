@@ -112,7 +112,7 @@
       <div id="toc">
       </div>
         <ul class="toc-footer">
-          <li><a href="https://www.rockthevote.org/programs-and-partner-resources/tech-for-civic-engagement/online-voter-registration-platform/">Sign Up for a Developer Key</a></li>
+            <li>Sign Up for a Developer Key https://www.rockthevote.org/programs-and-partner-resources/tech-for-civic-engagement/online-voter-registration-platform/</li>
         </ul>
     </div>
     <div class="page-wrapper">
@@ -1545,7 +1545,9 @@
 
 <p><code class="prettyprint">POST /api/v4/registrant_reports.json</code></p>
 
-<p>Returns a status_url to call to check on the report progress. Calls to that URL will return a download_url in the response once the report is complete.</p>
+<p><code class="prettyprint">POST /api/v5/registrant_reports.json</code></p>
+
+<p>Returns a status_url to call to check on the report progress. Calls to that URL will return a download_url in the response once the report is complete. API v4 and API v5 take the same parameters and the same <code class="prettyprint">report_type</code> values. A v5 report&rsquo;s status and download URLs are under <code class="prettyprint">/api/v5/registrant_reports</code>.</p>
 
 <table><thead>
 <tr>
@@ -1587,7 +1589,7 @@
 <tr>
 <td>report_type</td>
 <td>string</td>
-<td>Optional. See valid report_type values in table below. Used to indicate an alternate CSV format with added fields.</td>
+<td>Optional. See valid report_type values in table below. Leave blank for the online voter registration report. <code class="prettyprint">extended</code> requests that report in an alternate CSV format with added fields. Any other value below selects that report instead.</td>
 </tr>
 </tbody></table>
 
@@ -1630,6 +1632,18 @@
 <tr>
 <td>grommet_shift_report</td>
 <td>PA Shift Report (Old versions of PA App only)</td>
+</tr>
+<tr>
+<td>ballot_lookup_report</td>
+<td>What&rsquo;s on my ballot report</td>
+</tr>
+<tr>
+<td>voting_location_lookup_report</td>
+<td>Polling Place Lookup report</td>
+</tr>
+<tr>
+<td>ballot_status_report</td>
+<td>Track Ballot report</td>
 </tr>
 </tbody></table>
 
@@ -1786,7 +1800,9 @@
 
 <p><code class="prettyprint">GET /api/v4/registrant_reports/&lt;ID&gt;.json</code></p>
 
-<p>Returns report record with ID and URL for checking report status</p>
+<p><code class="prettyprint">GET /api/v5/registrant_reports/&lt;ID&gt;.json</code></p>
+
+<p>Returns report record with ID and URL for checking report status. API v5 returns the same fields, with URLs under <code class="prettyprint">/api/v5/registrant_reports</code>.</p>
 
 <table><thead>
 <tr>
@@ -2490,6 +2506,5 @@
           </div>
       </div>
     </div>
-  <script src="javascripts/restore-toc.js"></script>
-</body>
+  </body>
 </html>
