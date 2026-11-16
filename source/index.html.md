@@ -700,7 +700,9 @@ For a given partner, checks `partner_id` (ID in the "partners" table) and corres
 
 `POST /api/v4/registrant_reports.json`
 
-Returns a status_url to call to check on the report progress. Calls to that URL will return a download_url in the response once the report is complete.
+`POST /api/v5/registrant_reports.json`
+
+Returns a status_url to call to check on the report progress. Calls to that URL will return a download_url in the response once the report is complete. API v4 and API v5 take the same parameters and the same `report_type` values. A v5 report's status and download URLs are under `/api/v5/registrant_reports`.
 
 Parameter | Type | Notes
 --------- | ---- | -----
@@ -710,7 +712,7 @@ since | string | Optional, UTC datetime format
 before | string | Optional, UTC datetime format
 email | string | Optional, email name at domain format
 callback | string | Optional
-report_type | string | Optional. See valid report_type values in table below. Used to indicate an alternate CSV format with added fields.
+report_type | string | Optional. See valid report_type values in table below. Leave blank for the online voter registration report. `extended` requests that report in an alternate CSV format with added fields. Any other value below selects that report instead.
 
 ### Valid report_type Values
 
@@ -724,6 +726,9 @@ lookup_report | Voter Status Lookup report
 grommet_registrants_report | PA Registration Report (PA App only)
 canvassing_shift_report | Canvassing Shift Report (PA App only)
 grommet_shift_report | PA Shift Report (Old versions of PA App only)
+ballot_lookup_report | What's on my ballot report
+voting_location_lookup_report | Polling Place Lookup report
+ballot_status_report | Track Ballot report
 
 ### "Extended" Report Type Field Definitions
 
@@ -775,7 +780,9 @@ For a given partner, checks `partner_id` (ID in the "partners" table) and corres
 
 `GET /api/v4/registrant_reports/<ID>.json`
 
-Returns report record with ID and URL for checking report status
+`GET /api/v5/registrant_reports/<ID>.json`
+
+Returns report record with ID and URL for checking report status. API v5 returns the same fields, with URLs under `/api/v5/registrant_reports`.
 
 Parameter | Type | Notes
 --------- | ---- | -----
